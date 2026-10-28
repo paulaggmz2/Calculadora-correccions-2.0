@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Plataforma de Càlcul Neuropsicològic</title>
+  <title>Plataforma Neuropsicològica - TAP, WAIS-III & RAVLT</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     body { background-color: #f1f5f9; font-family: system-ui, -apple-system, sans-serif; }
@@ -18,7 +18,7 @@
     <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-200 flex flex-col md:flex-row items-center justify-between gap-4">
       <div>
         <h1 class="text-xl font-bold text-slate-800">Plataforma Neuropsicològica Tipus Excel</h1>
-        <p class="text-xs text-slate-500 mt-0.5">Barems exactes TAP (NEURONORMA) i WAIS-III Clave de Números</p>
+        <p class="text-xs text-slate-500 mt-0.5">Barems d'Edat/Escolaritat/Sexe per a TAP, WAIS-III i RAVLT (Assajos 1-5, B, A6, A7, Rec. A i B)</p>
       </div>
       <button type="button" onclick="exportFullExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm py-2.5 px-4 rounded-lg shadow transition flex items-center gap-2">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
@@ -37,17 +37,17 @@
         </div>
         <div>
           <label class="block text-xs font-semibold text-slate-600 mb-1">Edat (Anys) *</label>
-          <input type="number" id="partAge" placeholder="Ex: 45" class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+          <input type="number" id="partAge" placeholder="Ex: 55" class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none">
         </div>
         <div>
           <label class="block text-xs font-semibold text-slate-600 mb-1">Escolaritat (Anys) *</label>
           <input type="number" id="partEdu" placeholder="Ex: 12" value="12" min="0" max="20" class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none">
         </div>
         <div>
-          <label class="block text-xs font-semibold text-slate-600 mb-1">Sexe</label>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">Sexe *</label>
           <select id="partGender" class="w-full px-2 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none">
-            <option value="Home">Home</option>
-            <option value="Dona">Dona</option>
+            <option value="Dona">Dona / Mujer</option>
+            <option value="Home">Home / Hombre</option>
             <option value="Altre">Altre</option>
           </select>
         </div>
@@ -57,16 +57,31 @@
         <div class="md:col-span-2">
           <label class="block text-xs font-semibold text-slate-600 mb-1">Selecciona Escala / Prova *</label>
           <select id="scaleSelect" class="w-full px-3 py-2 border rounded-lg text-sm bg-white font-medium focus:ring-2 focus:ring-blue-500 outline-none">
-            <option value="TAP">TAP (Test de Acentuación de Palabras - NEURONORMA)</option>
-            <option value="WAIS_COD">Clave de Números (WAIS-III) - 1. Codificación</option>
-            <option value="WAIS_EMP">Clave de Números (WAIS-III) - 2. Emparejamiento (E)</option>
-            <option value="WAIS_COP">Clave de Números (WAIS-III) - 3. Copia</option>
-            <option value="WAIS_ML">Clave de Números (WAIS-III) - 4. Memoria Libre (M.L.)</option>
+            <optgroup label="TAP & WAIS-III">
+              <option value="TAP">TAP (Test de Acentuación de Palabras - NEURONORMA)</option>
+              <option value="WAIS_COD">Clave de Números (WAIS-III) - 1. Codificación</option>
+              <option value="WAIS_EMP">Clave de Números (WAIS-III) - 2. Emparejamiento (E)</option>
+              <option value="WAIS_COP">Clave de Números (WAIS-III) - 3. Copia</option>
+              <option value="WAIS_ML">Clave de Números (WAIS-III) - 4. Memoria Libre (M.L.)</option>
+            </optgroup>
+            <optgroup label="RAVLT (Rey Auditory Verbal Learning Test)">
+              <option value="RAVLT_A1">RAVLT - Assaig 1 (A1)</option>
+              <option value="RAVLT_A2">RAVLT - Assaig 2 (A2)</option>
+              <option value="RAVLT_A3">RAVLT - Assaig 3 (A3)</option>
+              <option value="RAVLT_A4">RAVLT - Assaig 4 (A4)</option>
+              <option value="RAVLT_A5">RAVLT - Assaig 5 (A5)</option>
+              <option value="RAVLT_TOTAL">RAVLT - Total Assajos 1-5 (A1-A5)</option>
+              <option value="RAVLT_B1">RAVLT - Llista B (B1)</option>
+              <option value="RAVLT_A6">RAVLT - Memòria Immediata Llista A (A6)</option>
+              <option value="RAVLT_A7">RAVLT - Memòria Diferida Llista A (A7)</option>
+              <option value="RAVLT_REC_A">RAVLT - Reconeixement Llista A</option>
+              <option value="RAVLT_REC_B">RAVLT - Reconeixement Llista B</option>
+            </optgroup>
           </select>
         </div>
         <div>
           <label class="block text-xs font-semibold text-slate-600 mb-1">Puntuació Directa (PD) *</label>
-          <input type="number" id="scalePD" placeholder="Ex: 25" class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+          <input type="number" id="scalePD" step="any" placeholder="Ex: 10" class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none">
         </div>
       </div>
 
@@ -156,7 +171,7 @@
       headerRow.innerHTML = FULL_COLUMNS.map(col => `<th class="px-3 py-2 text-[11px] whitespace-nowrap bg-slate-100 border">${col}</th>`).join('');
     };
 
-    // TABLA EXACTA 1 DEL TAP: RANGS PER EDAT (PD -> Pe)
+    // --- TABLA TAP: MATRIZ DE EDAD Y ESCOLARIDAD ---
     const TAP_AGE_RULES = [
       { pe: 2,  ranges: [[0,13], [0,11], [0,15], [0,9],  [0,8],   [0,8],   [0,10],  [0,10],  [0,4]] },
       { pe: 3,  ranges: [[14,14], [12,13], [16,16], [10,13], null,    null,    null,    null,    [5,14]] },
@@ -174,7 +189,6 @@
       { pe: 18, ranges: [[30,30], [30,30], [30,30], [30,30], [30,30], [30,30], [30,30], [30,30], [30,30]] }
     ];
 
-    // TABLA EXACTA 2 DEL TAP: AJUST PER ESCOLARITAT (0 a 20 anys)
     const TAP_EDU_MATRIX = [
       [9,8,7,7,6,6,5,5,4,4,3,3,2,1,1,0,0,-1,-1,-2,-2],
       [10,9,8,8,7,7,6,6,5,5,4,4,3,2,2,1,1,0,0,-1,-1],
@@ -195,24 +209,21 @@
       [25,24,23,23,22,22,21,21,20,20,19,19,18,17,17,16,16,15,15,14,14]
     ];
 
-    function getAgeColumnIndex(age) {
-      if (age >= 18 && age <= 25) return 0;
-      if (age >= 26 && age <= 35) return 1;
-      if (age >= 36 && age <= 45) return 2;
-      if (age >= 46 && age <= 55) return 3;
-      if (age >= 56 && age <= 65) return 4;
-      if (age >= 66 && age <= 70) return 5;
-      if (age >= 71 && age <= 75) return 6;
-      if (age >= 76 && age <= 80) return 7;
-      if (age >= 81) return 8;
-      return 0;
+    function getTapAgeColumnIndex(age) {
+      if (age <= 25) return 0;
+      if (age <= 35) return 1;
+      if (age <= 45) return 2;
+      if (age <= 55) return 3;
+      if (age <= 65) return 4;
+      if (age <= 70) return 5;
+      if (age <= 75) return 6;
+      if (age <= 80) return 7;
+      return 8;
     }
 
     function calculateTAP(pd, age, edu) {
-      const colIdx = getAgeColumnIndex(age);
+      const colIdx = getTapAgeColumnIndex(age);
       let peAge = null;
-
-      // Cerca exacta del Pe segons la taula d'edat
       for (const rule of TAP_AGE_RULES) {
         const range = rule.ranges[colIdx];
         if (range !== null && pd >= range[0] && pd <= range[1]) {
@@ -220,34 +231,80 @@
           break;
         }
       }
-
-      // Si no es troba en un interval directe (cas de forats o extrems)
       if (peAge === null) {
         if (pd >= 30) peAge = 18;
-        else if (pd <= 4) peAge = 2;
-        else {
-          // Cerca del Pe més proper
-          let lastValidPe = 2;
-          for (const rule of TAP_AGE_RULES) {
-            const range = rule.ranges[colIdx];
-            if (range !== null) {
-              if (pd >= range[0]) lastValidPe = rule.pe;
-            }
-          }
-          peAge = lastValidPe;
-        }
+        else peAge = 2;
       }
-
-      // Ajust per Escolaritat
       const eduClamped = Math.min(Math.max(edu, 0), 20);
       const peRowIndex = Math.min(Math.max(peAge - 2, 0), 16);
       return TAP_EDU_MATRIX[peRowIndex][eduClamped];
     }
 
+    // --- CÀLCULS RAVLT BASATS EN LES FÓRMULES OFICIALS ---
+    function roundPe(val) {
+      let clamped = Math.max(2, Math.min(18, val));
+      return Math.round(clamped * 10) / 10;
+    }
+
+    function getRavltAgeGroupIndex(age) {
+      if (age < 50) return 0; // 40-49
+      if (age < 60) return 1; // 50-59
+      if (age < 70) return 2; // 60-69
+      return 3;              // 70+
+    }
+
+    function calculateRAVLT(scaleKey, pd, age, gender) {
+      const ageIdx = getRavltAgeGroupIndex(age);
+      const isWoman = (gender === "Dona");
+
+      // Normes per a Assajos Generals (A1 a A5, Total, B1, A6, A7)
+      const RAVLT_PARAMS = {
+        RAVLT_A1:    { mean: [6.6, 6.2, 5.9, 5.5],  sd: [1.7, 1.6, 1.6, 1.6] },
+        RAVLT_A2:    { mean: [9.3, 9.0, 8.4, 7.7],  sd: [1.9, 1.9, 2.0, 2.1] },
+        RAVLT_A3:    { mean: [10.8, 10.5, 9.8, 8.8], sd: [2.1, 1.9, 2.3, 2.1] },
+        RAVLT_A4:    { mean: [11.7, 11.4, 10.9, 9.8], sd: [2.1, 1.9, 2.3, 2.4] },
+        RAVLT_A5:    { mean: [12.3, 12.1, 11.3, 10.3], sd: [1.9, 2.1, 2.3, 2.4] },
+        RAVLT_TOTAL: { mean: [51.1, 47.6, 43.4, 37.1], sd: [8.6, 8.1, 7.7, 7.5] },
+        RAVLT_B1:    { mean: [6.1, 5.7, 5.1, 3.9],  sd: [1.9, 2.2, 1.3, 1.6] },
+        RAVLT_A6:    { mean: [10.4, 9.9, 9.3, 8.1], sd: [2.6, 2.8, 2.9, 3.0] },
+        RAVLT_A7:    { mean: [10.2, 9.9, 8.8, 7.0], sd: [2.8, 3.2, 3.0, 2.4] }
+      };
+
+      // Normes de Reconeixement diferenciades per Sexe
+      const RAVLT_REC_WOMEN = {
+        RAVLT_REC_A: { mean: [14.4, 13.7, 13.8, 13.6], sd: [0.8, 1.1, 1.1, 2.0] },
+        RAVLT_REC_B: { mean: [7.4, 5.7, 7.5, 7.5],     sd: [2.8, 2.4, 3.6, 3.7] }
+      };
+
+      const RAVLT_REC_MEN = {
+        RAVLT_REC_A: { mean: [14.2, 13.9, 12.4, 11.5], sd: [1.0, 0.9, 2.8, 2.6] },
+        RAVLT_REC_B: { mean: [6.9, 4.7, 4.9, 3.0],     sd: [2.6, 2.9, 2.7, 2.5] }
+      };
+
+      let m, s;
+
+      if (scaleKey === 'RAVLT_REC_A' || scaleKey === 'RAVLT_REC_B') {
+        const dict = isWoman ? RAVLT_REC_WOMEN : RAVLT_REC_MEN;
+        m = dict[scaleKey].mean[ageIdx];
+        s = dict[scaleKey].sd[ageIdx];
+      } else if (RAVLT_PARAMS[scaleKey]) {
+        m = RAVLT_PARAMS[scaleKey].mean[ageIdx];
+        s = RAVLT_PARAMS[scaleKey].sd[ageIdx];
+      } else {
+        return 10;
+      }
+
+      const z = (pd - m) / s;
+      const pe = (z * 3) + 10;
+      return roundPe(pe);
+    }
+
+    // --- ACCIÓ PRINCIPAL D'AFEGIR A EXCEL ---
     function addScaleToExcel() {
       const code = document.getElementById('partCode').value.trim();
       const age = parseInt(document.getElementById('partAge').value);
       const edu = parseInt(document.getElementById('partEdu').value);
+      const gender = document.getElementById('partGender').value;
       const pd = parseFloat(document.getElementById('scalePD').value);
 
       if (!code) { alert("Escriu el Codi del Participant (ex: METS_01)."); return; }
@@ -258,6 +315,7 @@
       activeData.codi_participant = code;
       activeData._age = age;
       activeData._edu = edu;
+      activeData._gender = gender;
 
       const scale = document.getElementById('scaleSelect').value;
 
@@ -277,7 +335,7 @@
         activeData.cn_codificacio_pd_pre = pd;
         activeData.cn_codificacio_pe_pre = pe;
       }
-      else {
+      else if (scale === 'WAIS_EMP' || scale === 'WAIS_COP' || scale === 'WAIS_ML') {
         let keyPd = "cn_aparellament_pd_pre", keyPc = "cn_aparellament_pc_pre";
         if (scale === 'WAIS_COP') { keyPd = "cn_copia_pd_pre"; keyPc = "cn_copia_pc_pre"; }
         if (scale === 'WAIS_ML') { keyPd = "cn_memoria_lliure_pd_pre"; keyPc = "cn_memoria_lliure_pc_pre"; }
@@ -288,6 +346,28 @@
 
         activeData[keyPd] = pd;
         activeData[keyPc] = pcResult;
+      }
+      else if (scale.startsWith('RAVLT_')) {
+        const peCalculated = calculateRAVLT(scale, pd, age, gender);
+        
+        const mapCols = {
+          RAVLT_A1:    ['ravlt_assaig_1_pd_pre', 'ravlt_assaig_1_pe_pre'],
+          RAVLT_A2:    ['ravlt_assaig_2_pd_pre', 'ravlt_assaig_2_pe_pre'],
+          RAVLT_A3:    ['ravlt_assaig_3_pd_pre', 'ravlt_assaig_3_pe_pre'],
+          RAVLT_A4:    ['ravlt_assaig_4_pd_pre', 'ravlt_assaig_4_pe_pre'],
+          RAVLT_A5:    ['ravlt_assaig_5_pd_pre', 'ravlt_assaig_5_pe_pre'],
+          RAVLT_TOTAL: ['ravlt_assaig_1_5_pd_pre', 'ravlt_assaig_1_5_pe_pre'],
+          RAVLT_B1:    ['ravlt_assaig_b_pd_pre', 'ravlt_assaig_b_pe_pre'],
+          RAVLT_A6:    ['ravlt_memoria_immediata_pd_pre', 'ravlt_memoria_immediata_pe_pre'],
+          RAVLT_A7:    ['ravlt_memoria_diferida_pd_pre', 'ravlt_memoria_diferida_pe_pre'],
+          RAVLT_REC_A: ['ravlt_reconeixement_a_pd_pre', 'ravlt_reconeixement_a_pe_pre'],
+          RAVLT_REC_B: ['ravlt_reconeixement_b_pd_pre', 'ravlt_reconeixement_b_pe_pre']
+        };
+
+        if (mapCols[scale]) {
+          activeData[mapCols[scale][0]] = pd;
+          activeData[mapCols[scale][1]] = peCalculated;
+        }
       }
 
       document.getElementById('scalePD').value = '';
@@ -341,7 +421,5 @@
       document.body.removeChild(link);
     }
   </script>
-</body>
-</html>
 </body>
 </html>
