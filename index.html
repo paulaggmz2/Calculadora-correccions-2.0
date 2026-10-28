@@ -1,901 +1,419 @@
-<!DOCTYPE html>
-<html lang="ca">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Calculadora Neuropsicològica VirtualMETS</title>
-  <!-- Tailwind CSS per al disseny visual -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    input::-webkit-outer-spin-button,
-    input::-webkit-inner-spin-button {
-      -webkit-appearance: none;
-      margin: 0;
-    }
-    input[type=number] {
-      -moz-appearance: textfield;
-    }
-  </style>
-</head>
-<body class="bg-slate-100 text-slate-800 font-sans min-h-screen p-4 md:p-8">
-
-  <div class="max-w-7xl mx-auto space-y-6">
-
-    <!-- Capçalera Principal -->
-    <header class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row justify-between items-center gap-4">
-      <div>
-        <h1 class="text-2xl font-black text-pink-700">VirtualMETS</h1>
-        <p class="text-sm text-slate-500">Calculadora Neuropsicològica i Base de Dades Acumulada</p>
-      </div>
-      
-      <!-- Navegació de Pestanyes (Pàgina 1 i Pàgina 2) -->
-      <div class="flex bg-slate-100 p-1 rounded-xl border border-slate-200">
-        <button id="btnTab1" onclick="switchPage(1)" class="px-5 py-2.5 font-bold text-sm rounded-lg bg-pink-600 text-white shadow-sm transition-all">
-          Pàgina 1: Formulari & Correcció
-        </button>
-        <button id="btnTab2" onclick="switchPage(2)" class="px-5 py-2.5 font-bold text-sm rounded-lg text-slate-600 hover:bg-slate-200/60 transition-all flex items-center gap-2">
-          Pàgina 2: Base de Dades
-          <span id="recordBadge" class="bg-pink-100 text-pink-800 text-xs px-2 py-0.5 rounded-full font-bold">0</span>
-        </button>
-      </div>
-    </header>
-
-    <!-- ================================================================================= -->
-    <!-- PÀGINA 1: FORMULARI DE DADES I CALCULADORA DE LES 11 PROVES -->
-    <!-- ================================================================================= -->
-    <main id="page1" class="space-y-6">
-
-      <!-- Dades Demogràfiques -->
-      <section class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-        <h2 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
-          <span class="w-3 h-3 rounded-full bg-pink-500 inline-block"></span> Dades Demogràfiques del Pacient
-        </h2>
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-          <div>
-            <label class="block text-xs font-bold text-slate-500 uppercase mb-1">ID Pacient / Codi</label>
-            <input type="text" id="subject_id" placeholder="Ex: P-001" class="w-full p-2.5 border border-slate-300 rounded-lg text-sm bg-slate-50 focus:bg-white focus:ring-2 focus:ring-pink-500 outline-none">
-          </div>
-          <div>
-            <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Sexe</label>
-            <select id="sexe" onchange="calculateAll()" class="w-full p-2.5 border border-slate-300 rounded-lg text-sm bg-white focus:ring-2 focus:ring-pink-500 outline-none">
-              <option value="Dona">Dona</option>
-              <option value="Home">Home</option>
-            </select>
-          </div>
-          <div>
-            <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Edat (anys)</label>
-            <input type="number" id="edat" value="50" min="18" max="99" oninput="calculateAll()" class="w-full p-2.5 border border-slate-300 rounded-lg text-sm bg-white focus:ring-2 focus:ring-pink-500 outline-none font-bold">
-          </div>
-          <div>
-            <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Escolaritat (anys)</label>
-            <input type="number" id="escolaritat" value="12" min="0" max="25" oninput="calculateAll()" class="w-full p-2.5 border border-slate-300 rounded-lg text-sm bg-white focus:ring-2 focus:ring-pink-500 outline-none font-bold">
-          </div>
-        </div>
-      </section>
-
-      <!-- Botó de Gravació a la Base de Dades -->
-      <div class="flex justify-end">
-        <button onclick="saveCurrentParticipant()" class="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-md transition-all flex items-center gap-2">
-          <span>💾</span> Desar Pacient a la Base de Dades (Pàgina 2)
-        </button>
-      </div>
-
-      <!-- SECCIÓ AMB LES 11 PROVES (Ordre exactament igual que a l'Excel) -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-        <!-- 1. TAP -->
-        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-3">
-          <h3 class="font-bold text-pink-700 border-b pb-2">1. TAP (Acentuació de Paraules)</h3>
-          <div class="grid grid-cols-12 items-center gap-2">
-            <span class="col-span-6 text-sm font-medium">TAP Directa</span>
-            <input type="number" id="pd_tap" oninput="calculateAll()" placeholder="PD (0-30)" class="col-span-3 p-1.5 border rounded text-center text-sm">
-            <span id="pe_tap" class="col-span-3 font-bold text-center text-sm py-1 rounded bg-pink-50 text-pink-700 border border-pink-200">-</span>
-          </div>
-        </div>
-
-        <!-- 2. RAVLT -->
-        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-3 md:col-span-2">
-          <h3 class="font-bold text-pink-700 border-b pb-2">2. RAVLT (Rey Auditory Verbal Learning Test)</h3>
-          <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
-            <div>
-              <label class="block text-xs text-slate-500 font-bold mb-1">Trial A1</label>
-              <input type="number" id="pd_ravlt_a1" oninput="calculateAll()" placeholder="PD" class="w-full p-1.5 border rounded text-center text-sm">
-              <div id="pe_ravlt_a1" class="text-center font-bold text-xs mt-1 py-1 rounded bg-slate-100 text-slate-700">-</div>
-            </div>
-            <div>
-              <label class="block text-xs text-slate-500 font-bold mb-1">Trial A2</label>
-              <input type="number" id="pd_ravlt_a2" oninput="calculateAll()" placeholder="PD" class="w-full p-1.5 border rounded text-center text-sm">
-              <div id="pe_ravlt_a2" class="text-center font-bold text-xs mt-1 py-1 rounded bg-slate-100 text-slate-700">-</div>
-            </div>
-            <div>
-              <label class="block text-xs text-slate-500 font-bold mb-1">Trial A3</label>
-              <input type="number" id="pd_ravlt_a3" oninput="calculateAll()" placeholder="PD" class="w-full p-1.5 border rounded text-center text-sm">
-              <div id="pe_ravlt_a3" class="text-center font-bold text-xs mt-1 py-1 rounded bg-slate-100 text-slate-700">-</div>
-            </div>
-            <div>
-              <label class="block text-xs text-slate-500 font-bold mb-1">Trial A4</label>
-              <input type="number" id="pd_ravlt_a4" oninput="calculateAll()" placeholder="PD" class="w-full p-1.5 border rounded text-center text-sm">
-              <div id="pe_ravlt_a4" class="text-center font-bold text-xs mt-1 py-1 rounded bg-slate-100 text-slate-700">-</div>
-            </div>
-            <div>
-              <label class="block text-xs text-slate-500 font-bold mb-1">Trial A5</label>
-              <input type="number" id="pd_ravlt_a5" oninput="calculateAll()" placeholder="PD" class="w-full p-1.5 border rounded text-center text-sm">
-              <div id="pe_ravlt_a5" class="text-center font-bold text-xs mt-1 py-1 rounded bg-slate-100 text-slate-700">-</div>
-            </div>
-            <div>
-              <label class="block text-xs text-slate-500 font-bold mb-1">Total A1-A5</label>
-              <div id="pd_ravlt_sum" class="p-1.5 border rounded text-center text-sm font-bold bg-slate-50">-</div>
-              <div id="pe_ravlt_sum" class="text-center font-bold text-xs mt-1 py-1 rounded bg-pink-50 text-pink-700 border border-pink-200">-</div>
-            </div>
-            <div>
-              <label class="block text-xs text-slate-500 font-bold mb-1">Lista B</label>
-              <input type="number" id="pd_ravlt_b1" oninput="calculateAll()" placeholder="PD" class="w-full p-1.5 border rounded text-center text-sm">
-              <div id="pe_ravlt_b1" class="text-center font-bold text-xs mt-1 py-1 rounded bg-slate-100 text-slate-700">-</div>
-            </div>
-            <div>
-              <label class="block text-xs text-slate-500 font-bold mb-1">A6 (Inmediat)</label>
-              <input type="number" id="pd_ravlt_a6" oninput="calculateAll()" placeholder="PD" class="w-full p-1.5 border rounded text-center text-sm">
-              <div id="pe_ravlt_a6" class="text-center font-bold text-xs mt-1 py-1 rounded bg-slate-100 text-slate-700">-</div>
-            </div>
-            <div>
-              <label class="block text-xs text-slate-500 font-bold mb-1">A7 (Diferit)</label>
-              <input type="number" id="pd_ravlt_a7" oninput="calculateAll()" placeholder="PD" class="w-full p-1.5 border rounded text-center text-sm">
-              <div id="pe_ravlt_a7" class="text-center font-bold text-xs mt-1 py-1 rounded bg-slate-100 text-slate-700">-</div>
-            </div>
-            <div>
-              <label class="block text-xs text-slate-500 font-bold mb-1">Reconeixement A</label>
-              <input type="number" id="pd_ravlt_rec_a" oninput="calculateAll()" placeholder="PD" class="w-full p-1.5 border rounded text-center text-sm">
-              <div id="pe_ravlt_rec_a" class="text-center font-bold text-xs mt-1 py-1 rounded bg-slate-100 text-slate-700">-</div>
-            </div>
-            <div>
-              <label class="block text-xs text-slate-500 font-bold mb-1">Reconeixement B</label>
-              <input type="number" id="pd_ravlt_rec_b" oninput="calculateAll()" placeholder="PD" class="w-full p-1.5 border rounded text-center text-sm">
-              <div id="pe_ravlt_rec_b" class="text-center font-bold text-xs mt-1 py-1 rounded bg-slate-100 text-slate-700">-</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- 3. Clave de números WAIS-III -->
-        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-3">
-          <h3 class="font-bold text-pink-700 border-b pb-2">3. Clave de Números (WAIS-III)</h3>
-          <div class="space-y-2">
-            <div class="grid grid-cols-12 items-center gap-2">
-              <span class="col-span-6 text-xs font-semibold">1. Codificació</span>
-              <input type="number" id="pd_wais_cod" oninput="calculateAll()" placeholder="PD" class="col-span-3 p-1 border rounded text-center text-xs">
-              <span id="pe_wais_cod" class="col-span-3 font-bold text-center text-xs py-1 rounded bg-pink-50 text-pink-700 border border-pink-200">Pe: -</span>
-            </div>
-            <div class="grid grid-cols-12 items-center gap-2">
-              <span class="col-span-6 text-xs font-semibold">2. Emparejamiento</span>
-              <input type="number" id="pd_wais_emp" oninput="calculateAll()" placeholder="PD" class="col-span-3 p-1 border rounded text-center text-xs">
-              <span id="pc_wais_emp" class="col-span-3 font-bold text-center text-xs py-1 rounded bg-slate-100 text-slate-700">Pc: -</span>
-            </div>
-            <div class="grid grid-cols-12 items-center gap-2">
-              <span class="col-span-6 text-xs font-semibold">3. Copia</span>
-              <input type="number" id="pd_wais_copia" oninput="calculateAll()" placeholder="PD" class="col-span-3 p-1 border rounded text-center text-xs">
-              <span id="pc_wais_copia" class="col-span-3 font-bold text-center text-xs py-1 rounded bg-slate-100 text-slate-700">Pc: -</span>
-            </div>
-            <div class="grid grid-cols-12 items-center gap-2">
-              <span class="col-span-6 text-xs font-semibold">4. Memòria Lliure</span>
-              <input type="number" id="pd_wais_ml" oninput="calculateAll()" placeholder="PD" class="col-span-3 p-1 border rounded text-center text-xs">
-              <span id="pc_wais_ml" class="col-span-3 font-bold text-center text-xs py-1 rounded bg-slate-100 text-slate-700">Pc: -</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- 4. BVMT-R -->
-        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-3">
-          <h3 class="font-bold text-pink-700 border-b pb-2">4. BVMT-R</h3>
-          <div class="grid grid-cols-3 gap-2">
-            <div>
-              <label class="block text-[10px] text-slate-500 font-bold">E1</label>
-              <input type="number" id="pd_bvmt_e1" oninput="calculateAll()" placeholder="PD" class="w-full p-1 border rounded text-center text-xs">
-              <div id="pe_bvmt_e1" class="text-center font-bold text-[10px] mt-0.5 py-0.5 rounded bg-slate-100">-</div>
-            </div>
-            <div>
-              <label class="block text-[10px] text-slate-500 font-bold">E2</label>
-              <input type="number" id="pd_bvmt_e2" oninput="calculateAll()" placeholder="PD" class="w-full p-1 border rounded text-center text-xs">
-            </div>
-            <div>
-              <label class="block text-[10px] text-slate-500 font-bold">E3</label>
-              <input type="number" id="pd_bvmt_e3" oninput="calculateAll()" placeholder="PD" class="w-full p-1 border rounded text-center text-xs">
-            </div>
-            <div>
-              <label class="block text-[10px] text-slate-500 font-bold">RT Total</label>
-              <div id="pd_bvmt_rt" class="p-1 border rounded text-center text-xs font-bold bg-slate-50">-</div>
-              <div id="pe_bvmt_rt" class="text-center font-bold text-[10px] mt-0.5 py-0.5 rounded bg-pink-50 text-pink-700 border border-pink-200">-</div>
-            </div>
-            <div>
-              <label class="block text-[10px] text-slate-500 font-bold">RD (E4)</label>
-              <input type="number" id="pd_bvmt_rd" oninput="calculateAll()" placeholder="PD" class="w-full p-1 border rounded text-center text-xs">
-              <div id="pe_bvmt_rd" class="text-center font-bold text-[10px] mt-0.5 py-0.5 rounded bg-slate-100">-</div>
-            </div>
-            <div>
-              <label class="block text-[10px] text-slate-500 font-bold">% Retingut</label>
-              <div id="bvmt_ret" class="p-1 border rounded text-center text-xs font-bold bg-slate-50">-</div>
-            </div>
-            <div>
-              <label class="block text-[10px] text-slate-500 font-bold">Acierts</label>
-              <input type="number" id="pd_bvmt_aciertos" oninput="calculateAll()" placeholder="PD" class="w-full p-1 border rounded text-center text-xs">
-            </div>
-            <div>
-              <label class="block text-[10px] text-slate-500 font-bold">Falsos Pos</label>
-              <input type="number" id="pd_bvmt_falpos" oninput="calculateAll()" placeholder="PD" class="w-full p-1 border rounded text-center text-xs">
-            </div>
-            <div>
-              <label class="block text-[10px] text-slate-500 font-bold">Sesgo Resp.</label>
-              <div id="bvmt_sesgo" class="p-1 border rounded text-center text-xs font-bold bg-slate-50">-</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- 5. ML WMS-IV -->
-        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-3">
-          <h3 class="font-bold text-pink-700 border-b pb-2">5. Memòria Lògica (WMS-IV)</h3>
-          <div class="grid grid-cols-3 gap-2">
-            <div>
-              <label class="block text-xs text-slate-500 font-bold">ML I</label>
-              <input type="number" id="pd_wms_ml1" oninput="calculateAll()" placeholder="PD" class="w-full p-1 border rounded text-center text-xs">
-              <div id="pe_wms_ml1" class="text-center font-bold text-xs mt-1 py-1 rounded bg-pink-50 text-pink-700 border border-pink-200">-</div>
-            </div>
-            <div>
-              <label class="block text-xs text-slate-500 font-bold">ML II</label>
-              <input type="number" id="pd_wms_ml2" oninput="calculateAll()" placeholder="PD" class="w-full p-1 border rounded text-center text-xs">
-              <div id="pe_wms_ml2" class="text-center font-bold text-xs mt-1 py-1 rounded bg-pink-50 text-pink-700 border border-pink-200">-</div>
-            </div>
-            <div>
-              <label class="block text-xs text-slate-500 font-bold">Reconeix. II</label>
-              <input type="number" id="pd_wms_rec2" oninput="calculateAll()" placeholder="PD" class="w-full p-1 border rounded text-center text-xs">
-              <div id="pc_wms_rec2" class="text-center font-bold text-xs mt-1 py-1 rounded bg-slate-100 text-slate-700">-</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- 6. SPAN Dígits WAIS-IV -->
-        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-3">
-          <h3 class="font-bold text-pink-700 border-b pb-2">6. SPAN Dígits (WAIS-IV)</h3>
-          <div class="grid grid-cols-2 gap-3">
-            <div>
-              <label class="block text-xs text-slate-500 font-bold mb-1">Dígitos Directos (DD)</label>
-              <input type="number" id="pd_digits_dd" oninput="calculateAll()" placeholder="PD" class="w-full p-1.5 border rounded text-center text-sm">
-              <div id="pe_digits_dd" class="text-center font-bold text-xs mt-1 py-1 rounded bg-pink-50 text-pink-700 border border-pink-200">-</div>
-            </div>
-            <div>
-              <label class="block text-xs text-slate-500 font-bold mb-1">Dígitos Inversos (DI)</label>
-              <input type="number" id="pd_digits_di" oninput="calculateAll()" placeholder="PD" class="w-full p-1.5 border rounded text-center text-sm">
-              <div id="pe_digits_di" class="text-center font-bold text-xs mt-1 py-1 rounded bg-pink-50 text-pink-700 border border-pink-200">-</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- 7. TMT -->
-        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-3">
-          <h3 class="font-bold text-pink-700 border-b pb-2">7. TMT (Trail Making Test)</h3>
-          <div class="grid grid-cols-2 gap-3">
-            <div>
-              <label class="block text-xs text-slate-500 font-bold mb-1">TMT A (segons)</label>
-              <input type="number" id="pd_tmt_a" oninput="calculateAll()" placeholder="Temps" class="w-full p-1.5 border rounded text-center text-sm">
-              <div id="pe_tmt_a" class="text-center font-bold text-xs mt-1 py-1 rounded bg-pink-50 text-pink-700 border border-pink-200">-</div>
-            </div>
-            <div>
-              <label class="block text-xs text-slate-500 font-bold mb-1">TMT B (segons)</label>
-              <input type="number" id="pd_tmt_b" oninput="calculateAll()" placeholder="Temps" class="w-full p-1.5 border rounded text-center text-sm">
-              <div id="pe_tmt_b" class="text-center font-bold text-xs mt-1 py-1 rounded bg-pink-50 text-pink-700 border border-pink-200">-</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- 8. STROOP -->
-        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-3">
-          <h3 class="font-bold text-pink-700 border-b pb-2">8. STROOP</h3>
-          <div class="grid grid-cols-3 gap-2">
-            <div>
-              <label class="block text-xs text-slate-500 font-bold">Palabra (P)</label>
-              <input type="number" id="pd_stroop_p" oninput="calculateAll()" placeholder="PD" class="w-full p-1 border rounded text-center text-xs">
-              <div id="pe_stroop_p" class="text-center font-bold text-xs mt-1 py-1 rounded bg-pink-50 text-pink-700 border border-pink-200">-</div>
-            </div>
-            <div>
-              <label class="block text-xs text-slate-500 font-bold">Color (C)</label>
-              <input type="number" id="pd_stroop_c" oninput="calculateAll()" placeholder="PD" class="w-full p-1 border rounded text-center text-xs">
-              <div id="pe_stroop_c" class="text-center font-bold text-xs mt-1 py-1 rounded bg-pink-50 text-pink-700 border border-pink-200">-</div>
-            </div>
-            <div>
-              <label class="block text-xs text-slate-500 font-bold">Palabra-Color (PC)</label>
-              <input type="number" id="pd_stroop_pc" oninput="calculateAll()" placeholder="PD" class="w-full p-1 border rounded text-center text-xs">
-              <div id="pe_stroop_pc" class="text-center font-bold text-xs mt-1 py-1 rounded bg-pink-50 text-pink-700 border border-pink-200">-</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- 9. PMR -->
-        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-3">
-          <h3 class="font-bold text-pink-700 border-b pb-2">9. PMR (Fluïdesa Fonèmica)</h3>
-          <div class="grid grid-cols-3 gap-2">
-            <div>
-              <label class="block text-xs text-slate-500 font-bold">Lletra P</label>
-              <input type="number" id="pd_pmr_p" oninput="calculateAll()" placeholder="PD" class="w-full p-1 border rounded text-center text-xs">
-              <div id="pe_pmr_p" class="text-center font-bold text-xs mt-1 py-1 rounded bg-pink-50 text-pink-700 border border-pink-200">-</div>
-            </div>
-            <div>
-              <label class="block text-xs text-slate-500 font-bold">Lletra M</label>
-              <input type="number" id="pd_pmr_m" oninput="calculateAll()" placeholder="PD" class="w-full p-1 border rounded text-center text-xs">
-              <div id="pe_pmr_m" class="text-center font-bold text-xs mt-1 py-1 rounded bg-pink-50 text-pink-700 border border-pink-200">-</div>
-            </div>
-            <div>
-              <label class="block text-xs text-slate-500 font-bold">Lletra R</label>
-              <input type="number" id="pd_pmr_r" oninput="calculateAll()" placeholder="PD" class="w-full p-1 border rounded text-center text-xs">
-              <div id="pe_pmr_r" class="text-center font-bold text-xs mt-1 py-1 rounded bg-pink-50 text-pink-700 border border-pink-200">-</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- 10. Animals -->
-        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-3">
-          <h3 class="font-bold text-pink-700 border-b pb-2">10. Animals (Fluïdesa Semàntica)</h3>
-          <div class="grid grid-cols-12 items-center gap-2">
-            <span class="col-span-6 text-sm font-medium">Animals en 1 min.</span>
-            <input type="number" id="pd_animals" oninput="calculateAll()" placeholder="PD" class="col-span-3 p-1.5 border rounded text-center text-sm">
-            <span id="pe_animals" class="col-span-3 font-bold text-center text-sm py-1 rounded bg-pink-50 text-pink-700 border border-pink-200">-</span>
-          </div>
-        </div>
-
-        <!-- 11. MoCA -->
-        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-3">
-          <h3 class="font-bold text-pink-700 border-b pb-2">11. MoCA</h3>
-          <div class="grid grid-cols-2 gap-3">
-            <div>
-              <label class="block text-xs text-slate-500 font-bold mb-1">MoCA Total (0-30)</label>
-              <input type="number" id="pd_moca_total" oninput="calculateAll()" placeholder="PD" class="w-full p-1.5 border rounded text-center text-sm">
-              <div id="pe_moca_total" class="text-center font-bold text-xs mt-1 py-1 rounded bg-pink-50 text-pink-700 border border-pink-200">-</div>
-            </div>
-            <div>
-              <label class="block text-xs text-slate-500 font-bold mb-1">MoCA MIS (0-15)</label>
-              <input type="number" id="pd_moca_mis" oninput="calculateAll()" placeholder="PD" class="w-full p-1.5 border rounded text-center text-sm">
-              <div id="pc_moca_mis" class="text-center font-bold text-xs mt-1 py-1 rounded bg-slate-100 text-slate-700">-</div>
-            </div>
-          </div>
-        </div>
-
-      </div>
-
-    </main>
-
-    <!-- ================================================================================= -->
-    <!-- PÀGINA 2: BASE DE DADES ACUMULADA (Visualització i Exportació) -->
-    <!-- ================================================================================= -->
-    <section id="page2" class="hidden space-y-4">
-      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white p-5 rounded-2xl border border-slate-200 shadow-sm gap-4">
-        <div>
-          <h2 class="text-xl font-bold text-slate-800">Base de Dades Acumulada</h2>
-          <p class="text-xs text-slate-500">Tots els pacients que afegim es van desant automàticament.</p>
-        </div>
-        <div class="flex gap-2 w-full sm:w-auto">
-          <button onclick="exportToCSV()" class="flex-1 sm:flex-initial px-4 py-2.5 bg-pink-600 hover:bg-pink-700 text-white font-bold rounded-xl shadow-sm text-sm transition">
-            📥 Descarregar Excel / CSV
-          </button>
-          <button onclick="clearDatabase()" class="px-4 py-2.5 bg-red-50 hover:bg-red-100 text-red-700 font-bold rounded-xl border border-red-200 text-sm transition">
-            🗑️ Netejar Tot
-          </button>
-        </div>
-      </div>
-
-      <!-- Taula amb Scroll Horitzontal -->
-      <div class="overflow-x-auto bg-white rounded-2xl border border-slate-200 shadow-sm max-h-[600px]">
-        <table class="w-full text-xs text-left text-slate-700 border-collapse">
-          <thead class="text-[11px] text-slate-700 uppercase bg-slate-100 sticky top-0 border-b border-slate-200">
-            <tr id="dbTableHeader">
-              <!-- S'omple dinàmicament amb JS -->
-            </tr>
-          </thead>
-          <tbody id="dbTableBody" class="divide-y divide-slate-100">
-            <!-- S'omple dinàmicament amb JS -->
-          </tbody>
-        </table>
-      </div>
-    </section>
-
-  </div>
-
-  <!-- ================================================================================= -->
-  <!-- LÒGICA JAVASCRIPT COMPLETAMENT VERIFICADA SEGONS L'EXCEL -->
-  <!-- ================================================================================= -->
-  <script>
-    // 1. Llista completa de columnes de la base de dades en l'ordre de l'Excel
-    const FULL_COLUMNS = [
-      "subject_id", "data_registre", "sexe", "edat", "escolaritat",
-      
-      // 1. TAP
-      "pd_tap", "pe_tap",
-      
-      // 2. RAVLT
-      "pd_ravlt_a1", "pe_ravlt_a1", "pd_ravlt_a2", "pe_ravlt_a2", "pd_ravlt_a3", "pe_ravlt_a3",
-      "pd_ravlt_a4", "pe_ravlt_a4", "pd_ravlt_a5", "pe_ravlt_a5", "pd_ravlt_sum", "pe_ravlt_sum",
-      "pd_ravlt_b1", "pe_ravlt_b1", "pd_ravlt_a6", "pe_ravlt_a6", "pd_ravlt_a7", "pe_ravlt_a7",
-      "pd_ravlt_rec_a", "pe_ravlt_rec_a", "pd_ravlt_rec_b", "pe_ravlt_rec_b",
-
-      // 3. Clave de números WAIS-III
-      "pd_wais_cod", "pe_wais_cod", "pd_wais_emp", "pc_wais_emp", 
-      "pd_wais_copia", "pc_wais_copia", "pd_wais_ml", "pc_wais_ml",
-
-      // 4. BVMT-R
-      "pd_bvmt_e1", "pe_bvmt_e1", "pd_bvmt_e2", "pd_bvmt_e3", "pd_bvmt_rt", "pe_bvmt_rt",
-      "pd_bvmt_rd", "pe_bvmt_rd", "bvmt_ret", "pd_bvmt_aciertos", "pd_bvmt_falpos", "bvmt_sesgo",
-
-      // 5. ML WMS-IV
-      "pd_wms_ml1", "pe_wms_ml1", "pd_wms_ml2", "pe_wms_ml2", "pd_wms_rec2", "pc_wms_rec2",
-
-      // 6. SPAN Dígits WAIS-IV
-      "pd_digits_dd", "pe_digits_dd", "pd_digits_di", "pe_digits_di",
-
-      // 7. TMT
-      "pd_tmt_a", "pe_tmt_a", "pd_tmt_b", "pe_tmt_b",
-
-      // 8. STROOP
-      "pd_stroop_p", "pe_stroop_p", "pd_stroop_c", "pe_stroop_c", "pd_stroop_pc", "pe_stroop_pc",
-
-      // 9. PMR
-      "pd_pmr_p", "pe_pmr_p", "pd_pmr_m", "pe_pmr_m", "pd_pmr_r", "pe_pmr_r",
-
-      // 10. Animals
-      "pd_animals", "pe_animals",
-
-      // 11. MoCA
-      "pd_moca_total", "pe_moca_total", "pd_moca_mis", "pc_moca_mis"
-    ];
-
-    // Magatzem de dades calculades
-    let activeData = {};
-    let database = JSON.parse(localStorage.getItem('mets_database')) || [];
-
-    // Funcions de càlcul de les escales
-    function calculateAll() {
-      const sexe = document.getElementById('sexe').value;
-      const edat = parseInt(document.getElementById('edat').value) || 50;
-      const edu = parseInt(document.getElementById('escolaritat').value) || 12;
-
-      // Reset activeData
-      activeData = {};
-
-      // 1. TAP
-      const pd_tap = parseFloat(document.getElementById('pd_tap').value);
-      const pe_tap = calcTAP(pd_tap, edat, edu);
-      document.getElementById('pe_tap').innerText = pe_tap;
-      activeData.pd_tap = isNaN(pd_tap) ? "" : pd_tap;
-      activeData.pe_tap = pe_tap;
-
-      // 2. RAVLT
-      const a1 = parseFloat(document.getElementById('pd_ravlt_a1').value);
-      const a2 = parseFloat(document.getElementById('pd_ravlt_a2').value);
-      const a3 = parseFloat(document.getElementById('pd_ravlt_a3').value);
-      const a4 = parseFloat(document.getElementById('pd_ravlt_a4').value);
-      const a5 = parseFloat(document.getElementById('pd_ravlt_a5').value);
-      
-      const sum_a1_a5 = (!isNaN(a1)?a1:0) + (!isNaN(a2)?a2:0) + (!isNaN(a3)?a3:0) + (!isNaN(a4)?a4:0) + (!isNaN(a5)?a5:0);
-      const has_a = !isNaN(a1) || !isNaN(a2) || !isNaN(a3) || !isNaN(a4) || !isNaN(a5);
-      
-      document.getElementById('pd_ravlt_sum').innerText = has_a ? sum_a1_a5 : "-";
-      document.getElementById('pe_ravlt_a1').innerText = calcRAVLT(a1, 'A1', edat, sexe);
-      document.getElementById('pe_ravlt_a2').innerText = calcRAVLT(a2, 'A2', edat, sexe);
-      document.getElementById('pe_ravlt_a3').innerText = calcRAVLT(a3, 'A3', edat, sexe);
-      document.getElementById('pe_ravlt_a4').innerText = calcRAVLT(a4, 'A4', edat, sexe);
-      document.getElementById('pe_ravlt_a5').innerText = calcRAVLT(a5, 'A5', edat, sexe);
-
-      const pe_ravlt_sum = has_a ? calcRAVLT(sum_a1_a5, 'SUM', edat, sexe) : "-";
-      document.getElementById('pe_ravlt_sum').innerText = pe_ravlt_sum;
-
-      activeData.pd_ravlt_a1 = isNaN(a1) ? "" : a1; activeData.pe_ravlt_a1 = calcRAVLT(a1, 'A1', edat, sexe);
-      activeData.pd_ravlt_a2 = isNaN(a2) ? "" : a2; activeData.pe_ravlt_a2 = calcRAVLT(a2, 'A2', edat, sexe);
-      activeData.pd_ravlt_a3 = isNaN(a3) ? "" : a3; activeData.pe_ravlt_a3 = calcRAVLT(a3, 'A3', edat, sexe);
-      activeData.pd_ravlt_a4 = isNaN(a4) ? "" : a4; activeData.pe_ravlt_a4 = calcRAVLT(a4, 'A4', edat, sexe);
-      activeData.pd_ravlt_a5 = isNaN(a5) ? "" : a5; activeData.pe_ravlt_a5 = calcRAVLT(a5, 'A5', edat, sexe);
-      activeData.pd_ravlt_sum = has_a ? sum_a1_a5 : ""; activeData.pe_ravlt_sum = pe_ravlt_sum;
-
-      const b1 = parseFloat(document.getElementById('pd_ravlt_b1').value);
-      const a6 = parseFloat(document.getElementById('pd_ravlt_a6').value);
-      const a7 = parseFloat(document.getElementById('pd_ravlt_a7').value);
-      const rec_a = parseFloat(document.getElementById('pd_ravlt_rec_a').value);
-      const rec_b = parseFloat(document.getElementById('pd_ravlt_rec_b').value);
-
-      document.getElementById('pe_ravlt_b1').innerText = calcRAVLT(b1, 'B1', edat, sexe);
-      document.getElementById('pe_ravlt_a6').innerText = calcRAVLT(a6, 'A6', edat, sexe);
-      document.getElementById('pe_ravlt_a7').innerText = calcRAVLT(a7, 'A7', edat, sexe);
-      document.getElementById('pe_ravlt_rec_a').innerText = calcRAVLT(rec_a, 'REC_A', edat, sexe);
-      document.getElementById('pe_ravlt_rec_b').innerText = calcRAVLT(rec_b, 'REC_B', edat, sexe);
-
-      activeData.pd_ravlt_b1 = isNaN(b1)?"":b1; activeData.pe_ravlt_b1 = calcRAVLT(b1, 'B1', edat, sexe);
-      activeData.pd_ravlt_a6 = isNaN(a6)?"":a6; activeData.pe_ravlt_a6 = calcRAVLT(a6, 'A6', edat, sexe);
-      activeData.pd_ravlt_a7 = isNaN(a7)?"":a7; activeData.pe_ravlt_a7 = calcRAVLT(a7, 'A7', edat, sexe);
-      activeData.pd_ravlt_rec_a = isNaN(rec_a)?"":rec_a; activeData.pe_ravlt_rec_a = calcRAVLT(rec_a, 'REC_A', edat, sexe);
-      activeData.pd_ravlt_rec_b = isNaN(rec_b)?"":rec_b; activeData.pe_ravlt_rec_b = calcRAVLT(rec_b, 'REC_B', edat, sexe);
-
-      // 3. WAIS-III Clave
-      const w_cod = parseFloat(document.getElementById('pd_wais_cod').value);
-      const w_emp = parseFloat(document.getElementById('pd_wais_emp').value);
-      const w_copia = parseFloat(document.getElementById('pd_wais_copia').value);
-      const w_ml = parseFloat(document.getElementById('pd_wais_ml').value);
-
-      document.getElementById('pe_wais_cod').innerText = "Pe: " + calcWAIS_Cod(w_cod, edat);
-      document.getElementById('pc_wais_emp').innerText = "Pc: " + calcWAIS_Emp(w_emp, edat);
-      document.getElementById('pc_wais_copia').innerText = "Pc: " + calcWAIS_Copia(w_copia, edat);
-      document.getElementById('pc_wais_ml').innerText = "Pc: " + calcWAIS_ML(w_ml, edat);
-
-      activeData.pd_wais_cod = isNaN(w_cod)?"":w_cod; activeData.pe_wais_cod = calcWAIS_Cod(w_cod, edat);
-      activeData.pd_wais_emp = isNaN(w_emp)?"":w_emp; activeData.pc_wais_emp = calcWAIS_Emp(w_emp, edat);
-      activeData.pd_wais_copia = isNaN(w_copia)?"":w_copia; activeData.pc_wais_copia = calcWAIS_Copia(w_copia, edat);
-      activeData.pd_wais_ml = isNaN(w_ml)?"":w_ml; activeData.pc_wais_ml = calcWAIS_ML(w_ml, edat);
-
-      // 4. BVMT-R
-      const e1 = parseFloat(document.getElementById('pd_bvmt_e1').value);
-      const e2 = parseFloat(document.getElementById('pd_bvmt_e2').value);
-      const e3 = parseFloat(document.getElementById('pd_bvmt_e3').value);
-      const rd = parseFloat(document.getElementById('pd_bvmt_rd').value);
-      const aci = parseFloat(document.getElementById('pd_bvmt_aciertos').value);
-      const fal = parseFloat(document.getElementById('pd_bvmt_falpos').value);
-
-      const rt = (!isNaN(e1)?e1:0) + (!isNaN(e2)?e2:0) + (!isNaN(e3)?e3:0);
-      const has_rt = !isNaN(e1) || !isNaN(e2) || !isNaN(e3);
-      document.getElementById('pd_bvmt_rt').innerText = has_rt ? rt : "-";
-
-      const max_e2_e3 = Math.max(!isNaN(e2)?e2:0, !isNaN(e3)?e3:0);
-      const ret = (!isNaN(rd) && max_e2_e3 > 0) ? Math.round((rd / max_e2_e3) * 100) + "%" : "-";
-      document.getElementById('bvmt_ret').innerText = ret;
-
-      const sesgo = calcBVMTSesgo(aci, fal);
-      document.getElementById('bvmt_sesgo').innerText = sesgo;
-
-      document.getElementById('pe_bvmt_e1').innerText = calcBVMT(e1, 'E1', edat);
-      document.getElementById('pe_bvmt_rt').innerText = has_rt ? calcBVMT(rt, 'RT', edat) : "-";
-      document.getElementById('pe_bvmt_rd').innerText = calcBVMT(rd, 'RD', edat);
-
-      activeData.pd_bvmt_e1 = isNaN(e1)?"":e1; activeData.pe_bvmt_e1 = calcBVMT(e1, 'E1', edat);
-      activeData.pd_bvmt_e2 = isNaN(e2)?"":e2; activeData.pd_bvmt_e3 = isNaN(e3)?"":e3;
-      activeData.pd_bvmt_rt = has_rt?rt:""; activeData.pe_bvmt_rt = has_rt?calcBVMT(rt, 'RT', edat):"-";
-      activeData.pd_bvmt_rd = isNaN(rd)?"":rd; activeData.pe_bvmt_rd = calcBVMT(rd, 'RD', edat);
-      activeData.bvmt_ret = ret; activeData.pd_bvmt_aciertos = isNaN(aci)?"":aci; activeData.pd_bvmt_falpos = isNaN(fal)?"":fal; activeData.bvmt_sesgo = sesgo;
-
-      // 5. WMS-IV ML
-      const ml1 = parseFloat(document.getElementById('pd_wms_ml1').value);
-      const ml2 = parseFloat(document.getElementById('pd_wms_ml2').value);
-      const rec2 = parseFloat(document.getElementById('pd_wms_rec2').value);
-
-      document.getElementById('pe_wms_ml1').innerText = calcWMS_ML(ml1, 'ML1', edat);
-      document.getElementById('pe_wms_ml2').innerText = calcWMS_ML(ml2, 'ML2', edat);
-      document.getElementById('pc_wms_rec2').innerText = calcWMS_Rec2(rec2, edat);
-
-      activeData.pd_wms_ml1 = isNaN(ml1)?"":ml1; activeData.pe_wms_ml1 = calcWMS_ML(ml1, 'ML1', edat);
-      activeData.pd_wms_ml2 = isNaN(ml2)?"":ml2; activeData.pe_wms_ml2 = calcWMS_ML(ml2, 'ML2', edat);
-      activeData.pd_wms_rec2 = isNaN(rec2)?"":rec2; activeData.pc_wms_rec2 = calcWMS_Rec2(rec2, edat);
-
-      // 6. SPAN Dígits
-      const dd = parseFloat(document.getElementById('pd_digits_dd').value);
-      const di = parseFloat(document.getElementById('pd_digits_di').value);
-
-      document.getElementById('pe_digits_dd').innerText = calcDigits(dd, 'DD', edat, edu);
-      document.getElementById('pe_digits_di').innerText = calcDigits(di, 'DI', edat, edu);
-
-      activeData.pd_digits_dd = isNaN(dd)?"":dd; activeData.pe_digits_dd = calcDigits(dd, 'DD', edat, edu);
-      activeData.pd_digits_di = isNaN(di)?"":di; activeData.pe_digits_di = calcDigits(di, 'DI', edat, edu);
-
-      // 7. TMT
-      const tmt_a = parseFloat(document.getElementById('pd_tmt_a').value);
-      const tmt_b = parseFloat(document.getElementById('pd_tmt_b').value);
-
-      document.getElementById('pe_tmt_a').innerText = calcTMT(tmt_a, 'A', edat, edu);
-      document.getElementById('pe_tmt_b').innerText = calcTMT(tmt_b, 'B', edat, edu);
-
-      activeData.pd_tmt_a = isNaN(tmt_a)?"":tmt_a; activeData.pe_tmt_a = calcTMT(tmt_a, 'A', edat, edu);
-      activeData.pd_tmt_b = isNaN(tmt_b)?"":tmt_b; activeData.pe_tmt_b = calcTMT(tmt_b, 'B', edat, edu);
-
-      // 8. STROOP
-      const st_p = parseFloat(document.getElementById('pd_stroop_p').value);
-      const st_c = parseFloat(document.getElementById('pd_stroop_c').value);
-      const st_pc = parseFloat(document.getElementById('pd_stroop_pc').value);
-
-      document.getElementById('pe_stroop_p').innerText = calcStroop(st_p, 'P', edat, edu);
-      document.getElementById('pe_stroop_c').innerText = calcStroop(st_c, 'C', edat, edu);
-      document.getElementById('pe_stroop_pc').innerText = calcStroop(st_pc, 'PC', edat, edu);
-
-      activeData.pd_stroop_p = isNaN(st_p)?"":st_p; activeData.pe_stroop_p = calcStroop(st_p, 'P', edat, edu);
-      activeData.pd_stroop_c = isNaN(st_c)?"":st_c; activeData.pe_stroop_c = calcStroop(st_c, 'C', edat, edu);
-      activeData.pd_stroop_pc = isNaN(st_pc)?"":st_pc; activeData.pe_stroop_pc = calcStroop(st_pc, 'PC', edat, edu);
-
-      // 9. PMR
-      const pmr_p = parseFloat(document.getElementById('pd_pmr_p').value);
-      const pmr_m = parseFloat(document.getElementById('pd_pmr_m').value);
-      const pmr_r = parseFloat(document.getElementById('pd_pmr_r').value);
-
-      document.getElementById('pe_pmr_p').innerText = calcPMR(pmr_p, 'P', edat);
-      document.getElementById('pe_pmr_m').innerText = calcPMR(pmr_m, 'M', edat);
-      document.getElementById('pe_pmr_r').innerText = calcPMR(pmr_r, 'R', edat);
-
-      activeData.pd_pmr_p = isNaN(pmr_p)?"":pmr_p; activeData.pe_pmr_p = calcPMR(pmr_p, 'P', edat);
-      activeData.pd_pmr_m = isNaN(pmr_m)?"":pmr_m; activeData.pe_pmr_m = calcPMR(pmr_m, 'M', edat);
-      activeData.pd_pmr_r = isNaN(pmr_r)?"":pmr_r; activeData.pe_pmr_r = calcPMR(pmr_r, 'R', edat);
-
-      // 10. Animals
-      const anim = parseFloat(document.getElementById('pd_animals').value);
-      const pe_anim = calcAnimals(anim, edat, edu);
-      document.getElementById('pe_animals').innerText = pe_anim;
-      activeData.pd_animals = isNaN(anim)?"":anim; activeData.pe_animals = pe_anim;
-
-      // 11. MoCA
-      const moca_tot = parseFloat(document.getElementById('pd_moca_total').value);
-      const moca_mis = parseFloat(document.getElementById('pd_moca_mis').value);
-
-      document.getElementById('pe_moca_total').innerText = calcMoCA(moca_tot, edat, edu);
-      document.getElementById('pc_moca_mis').innerText = calcMoCA_MIS(moca_mis, edat, edu, sexe);
-
-      activeData.pd_moca_total = isNaN(moca_tot)?"":moca_tot; activeData.pe_moca_total = calcMoCA(moca_tot, edat, edu);
-      activeData.pd_moca_mis = isNaN(moca_mis)?"":moca_mis; activeData.pc_moca_mis = calcMoCA_MIS(moca_mis, edat, edu, sexe);
+import math
+
+# ==============================================================================
+# FUNCIONS D'UTILITAT
+# ==============================================================================
+
+def buscar_pe_taula(pd, taula):
+    """
+    Cerca el Pe corresponent a una puntuació directa (PD) dins d'un diccionari
+    on les claus són els Pe i els valors són tuples (min, max).
+    """
+    for pe, (p_min, p_max) in taula.items():
+        if p_min <= pd <= p_max:
+            return pe
+    if pd < min(p_min for p_min, _ in taula.values()):
+        return min(taula.keys())
+    return max(taula.keys())
+
+
+def arrodoneix_pe(val):
+    """Ajusta i limita la puntuació escalar (Pe) entre el rang [2, 18]."""
+    res = round(val)
+    return max(2, min(18, res))
+
+
+# ==============================================================================
+# 1. TAP (Cross-Modal / Atenció)
+# ==============================================================================
+
+TAULES_TAP = {
+    '18-25': {2: (0, 13), 3: (14, 14), 4: (15, 18), 5: (19, 19), 6: (20, 20), 7: (21, 21), 8: (22, 23), 9: (24, 24), 10: (25, 25), 11: (26, 26), 12: (27, 27), 14: (28, 28), 15: (29, 29), 18: (30, 30)},
+    '26-35': {2: (0, 11), 3: (12, 13), 4: (14, 17), 5: (18, 20), 6: (21, 22), 7: (23, 23), 8: (24, 24), 9: (25, 25), 10: (26, 26), 11: (27, 27), 12: (28, 28), 13: (29, 29), 18: (30, 30)},
+    '36-45': {2: (0, 15), 3: (16, 16), 4: (17, 18), 5: (19, 20), 6: (21, 22), 7: (23, 23), 8: (24, 25), 9: (26, 26), 10: (27, 27), 11: (28, 28), 13: (29, 29), 18: (30, 30)},
+    '46-55': {2: (0, 9), 3: (10, 13), 4: (14, 17), 5: (18, 19), 6: (20, 21), 7: (22, 23), 8: (24, 24), 9: (25, 25), 10: (26, 26), 11: (27, 28), 14: (29, 29), 18: (30, 30)},
+    '56-65': {2: (0, 8), 4: (9, 9), 5: (10, 11), 6: (12, 13), 7: (14, 16), 8: (17, 18), 9: (19, 21), 10: (22, 24), 11: (25, 26), 12: (27, 27), 13: (28, 29), 18: (30, 30)},
+    '66-70': {2: (0, 8), 5: (9, 11), 6: (12, 13), 7: (14, 16), 8: (17, 18), 9: (19, 21), 10: (22, 24), 11: (25, 26), 12: (27, 27), 13: (28, 28), 14: (29, 29), 18: (30, 30)},
+    '71-75': {2: (0, 1), 5: (2, 4), 6: (5, 13), 7: (14, 15), 8: (16, 17), 9: (18, 19), 10: (20, 21), 11: (22, 25), 12: (26, 26), 13: (27, 28), 14: (29, 29), 18: (30, 30)},
+    '76-80': {2: (0, 1), 5: (2, 3), 6: (4, 10), 7: (11, 11), 8: (12, 14), 9: (15, 17), 10: (18, 18), 11: (19, 21), 12: (22, 23), 13: (24, 25), 14: (26, 29), 18: (30, 30)},
+    '81-86': {2: (0, 4), 6: (5, 5), 8: (6, 10), 9: (11, 13), 10: (14, 15), 11: (16, 19), 12: (20, 24), 13: (25, 26), 14: (27, 29), 18: (30, 30)}
+}
+
+def avalia_tap(pd, edat):
+    if edat <= 25: grup = '18-25'
+    elif edat <= 35: grup = '26-35'
+    elif edat <= 45: grup = '36-45'
+    elif edat <= 55: grup = '46-55'
+    elif edat <= 65: grup = '56-65'
+    elif edat <= 70: grup = '66-70'
+    elif edat <= 75: grup = '71-75'
+    elif edat <= 80: grup = '76-80'
+    else: grup = '81-86'
+    
+    return buscar_pe_taula(pd, TAULES_TAP[grup])
+
+
+# ==============================================================================
+# 2. RAVLT (Diferenciat per SEXE: Home / Dona)
+# ==============================================================================
+
+def avalia_ravlt(a1, a2, a3, a4, a5, b1, a6, a7, rec_a, rec_b, edat, sexe):
+    """
+    RAVLT: Calcula la puntuació escalar (Pe) per a tots els assajos.
+    sexe: 'H' / 'home' o 'D' / 'dona'
+    """
+    sum_a1_a5 = a1 + a2 + a3 + a4 + a5
+    
+    # Determinar grup d'edat i paràmetres (mitjana, desviació)
+    if edat < 50:
+        idx_e = 0 # 40-49
+    elif edat < 60:
+        idx_e = 1 # 50-59
+    elif edat < 70:
+        idx_e = 2 # 60-69
+    else:
+        idx_e = 3 # 70+
+
+    # Paràmetres normatius per edat
+    params = {
+        'A1': [(6.6, 1.7), (6.2, 1.6), (5.9, 1.6), (5.5, 1.6)],
+        'A2': [(9.3, 1.9), (9.0, 1.9), (8.4, 2.0), (7.7, 2.1)],
+        'A3': [(10.8, 2.1), (10.5, 1.9), (9.8, 2.3), (8.8, 2.1)],
+        'A4': [(11.7, 2.1), (11.4, 1.9), (10.9, 2.3), (9.8, 2.4)],
+        'A5': [(12.3, 1.9), (12.1, 2.1), (11.3, 2.3), (10.3, 2.4)],
+        'SUM': [(51.1, 8.6), (47.6, 8.1), (43.4, 7.7), (37.1, 7.5)],
+        'B1': [(6.1, 1.9), (5.7, 2.2), (5.1, 1.3), (3.9, 1.6)],
+        'A6': [(10.4, 2.6), (9.9, 2.8), (9.3, 2.9), (8.1, 3.0)],
+        'A7': [(10.2, 2.8), (9.9, 3.2), (8.8, 3.0), (7.0, 2.4)]
     }
 
-    // =================================================================================
-    // BAREMS DE CADA TEST (REGLES I FORMULES DELS EXCEL)
-    // =================================================================================
+    def calc_pe(pd, mean, sd):
+        val = ((pd - mean) / sd) * 3 + 10
+        return arrodoneix_pe(val)
 
-    // 1. TAP
-    function calcTAP(pd, edat, edu) {
-      if (isNaN(pd)) return "-";
-      let col = 0;
-      if (edat <= 25) col = 0; else if (edat <= 35) col = 1; else if (edat <= 45) col = 2;
-      else if (edat <= 55) col = 3; else if (edat <= 65) col = 4; else if (edat <= 70) col = 5;
-      else if (edat <= 75) col = 6; else if (edat <= 80) col = 7; else col = 8;
-
-      let basePe = 2;
-      if (pd >= 30) basePe = 18;
-      else if (pd >= 28) basePe = 14;
-      else if (pd >= 25) basePe = 10;
-      else if (pd >= 20) basePe = 6;
-      else if (pd >= 15) basePe = 4;
-
-      // Ajust escolaritat
-      let adj = 0;
-      if (edu <= 4) adj = 2;
-      else if (edu <= 8) adj = 1;
-      else if (edu >= 16) adj = -1;
-
-      return Math.min(18, Math.max(2, basePe + adj));
+    pe_dict = {
+        'A1': calc_pe(a1, *params['A1'][idx_e]),
+        'A2': calc_pe(a2, *params['A2'][idx_e]),
+        'A3': calc_pe(a3, *params['A3'][idx_e]),
+        'A4': calc_pe(a4, *params['A4'][idx_e]),
+        'A5': calc_pe(a5, *params['A5'][idx_e]),
+        'SUM_A1_A5': calc_pe(sum_a1_a5, *params['SUM'][idx_e]),
+        'B1': calc_pe(b1, *params['B1'][idx_e]),
+        'A6': calc_pe(a6, *params['A6'][idx_e]),
+        'A7': calc_pe(a7, *params['A7'][idx_e]),
     }
 
-    // 2. RAVLT
-    function calcRAVLT(pd, trial, edat, sexe) {
-      if (isNaN(pd)) return "-";
-      let mean = 10, sd = 3;
-      
-      // Valors de mitjana i desviació segons l'edat i el gènere (Excel RAVLT formulas)
-      if (edat < 50) { mean = 9.3; sd = 2.1; }
-      else if (edat < 60) { mean = 8.5; sd = 2.0; }
-      else if (edat < 70) { mean = 7.8; sd = 2.2; }
-      else { mean = 6.9; sd = 2.4; }
+    # RECONEIXEMENT (Diferenciat per Sexe!)
+    es_dona = str(sexe).strip().lower() in ['d', 'dona', 'mujer', 'f', 'female']
 
-      let z = (pd - mean) / sd;
-      let pe = Math.round(z * 3 + 10);
-      return Math.min(18, Math.max(2, pe));
+    if es_dona:
+        rec_params = {
+            'RecA': [(14.4, 0.8), (13.7, 1.1), (13.8, 1.1), (13.6, 2.0)],
+            'RecB': [(7.4, 2.8), (5.7, 2.4), (7.5, 3.6), (7.5, 3.7)]
+        }
+    else: # Home
+        rec_params = {
+            'RecA': [(14.2, 1.0), (13.9, 0.9), (12.4, 2.8), (11.5, 2.6)],
+            'RecB': [(6.9, 2.6), (4.7, 2.9), (4.9, 2.7), (3.0, 2.5)]
+        }
+
+    pe_dict['RecA'] = calc_pe(rec_a, *rec_params['RecA'][idx_e])
+    pe_dict['RecB'] = calc_pe(rec_b, *rec_params['RecB'][idx_e])
+
+    return pe_dict
+
+
+# ==============================================================================
+# 3. CLAU DE NÚMEROS (WAIS-III)
+# ==============================================================================
+
+TAULA_CODIFICACIO = {
+    '25-34': {1: (0, 35), 2: (36, 38), 3: (39, 43), 4: (44, 47), 5: (48, 52), 6: (53, 56), 7: (57, 62), 8: (63, 67), 9: (68, 73), 10: (74, 78), 11: (79, 83), 12: (84, 90), 13: (91, 95), 14: (96, 102), 15: (103, 106), 16: (107, 112), 17: (113, 132)},
+    '35-54': {1: (0, 3), 2: (4, 16), 3: (17, 20), 4: (21, 22), 5: (23, 30), 6: (31, 36), 7: (37, 43), 8: (44, 50), 9: (51, 60), 10: (61, 69), 11: (70, 75), 12: (76, 82), 13: (83, 89), 14: (90, 94), 15: (95, 103), 16: (104, 109), 17: (110, 119)},
+    '55-69': {1: (0, 0), 2: (1, 5), 3: (6, 6), 4: (7, 9), 5: (10, 14), 6: (15, 19), 7: (20, 23), 8: (24, 28), 9: (29, 35), 10: (36, 43), 11: (44, 51), 12: (52, 58), 13: (59, 70), 14: (71, 79), 15: (80, 88), 16: (89, 95), 17: (96, 97)},
+    '>70': {1: (0, 0), 2: (0, 0), 3: (1, 1), 4: (2, 3), 5: (4, 7), 6: (8, 9), 7: (10, 11), 8: (12, 14), 9: (15, 17), 10: (18, 22), 11: (23, 26), 12: (27, 34), 13: (35, 42), 14: (43, 52), 15: (53, 62), 16: (63, 65), 17: (66, 78)}
+}
+
+def avalia_clave_numeros(pd_codif, edat):
+    if edat <= 34: grup = '25-34'
+    elif edat <= 54: grup = '35-54'
+    elif edat <= 69: grup = '55-69'
+    else: grup = '>70'
+    
+    return buscar_pe_taula(pd_codif, TAULA_CODIFICACIO[grup])
+
+
+# ==============================================================================
+# 4. BVMT-R (Visual Memory)
+# ==============================================================================
+
+TAULES_BVMT = {
+    '18-25': {
+        'E1': {3: (0, 3), 5: (3, 3), 7: (4, 6), 8: (7, 8), 9: (9, 10), 10: (11, 12)},
+        'RT': {2: (0, 16), 4: (17, 18), 5: (19, 19), 6: (20, 22), 7: (23, 26), 8: (27, 28), 9: (29, 31), 10: (32, 33), 11: (34, 35), 12: (36, 36)},
+        'RD': {2: (0, 5), 4: (6, 6), 5: (7, 7), 6: (8, 8), 7: (9, 9), 8: (10, 10), 9: (11, 11), 10: (12, 12)},
+        'ID': {2: (0, 4), 6: (5, 5), 8: (6, 7), 9: (8, 9), 10: (10, 11), 11: (12, 12)}
+    },
+    '26-35': {
+        'E1': {4: (0, 2), 5: (3, 3), 7: (4, 6), 8: (7, 7), 9: (8, 10), 10: (11, 12)},
+        'RT': {2: (0, 8), 3: (9, 12), 4: (13, 14), 5: (15, 17), 6: (18, 19), 7: (20, 23), 8: (24, 27), 9: (28, 30), 10: (31, 33), 11: (34, 35), 12: (36, 36)},
+        'RD': {2: (0, 2), 3: (3, 3), 4: (4, 5), 5: (6, 6), 6: (7, 7), 7: (8, 8), 8: (9, 9), 9: (10, 10), 10: (11, 11), 11: (12, 12)},
+        'ID': {2: (0, 4), 5: (5, 5), 7: (6, 6), 8: (7, 7), 9: (8, 9), 10: (10, 11), 11: (12, 12)}
+    },
+    '36-45': {
+        'E1': {2: (0, 0), 4: (1, 1), 6: (2, 2), 7: (3, 5), 8: (6, 7), 9: (8, 9), 10: (10, 11), 11: (12, 12)},
+        'RT': {3: (0, 10), 4: (11, 13), 5: (14, 14), 6: (15, 16), 7: (17, 21), 8: (22, 25), 9: (26, 29), 10: (30, 32), 11: (33, 34), 12: (35, 36)},
+        'RD': {3: (0, 2), 4: (3, 4), 5: (5, 5), 6: (6, 6), 7: (7, 7), 8: (8, 8), 9: (9, 9), 10: (10, 10), 11: (11, 11), 12: (12, 12)},
+        'ID': {3: (0, 2), 5: (3, 4), 7: (5, 6), 8: (7, 7), 9: (8, 9), 10: (10, 10), 11: (11, 11), 12: (12, 12)}
+    }
+}
+
+def avalia_bvmt(e1, e2, e3, e4, edat):
+    rt = e1 + e2 + e3
+    rd = e4
+    id_val = max(e2, e3) - e1
+    
+    if edat <= 25: grup = '18-25'
+    elif edat <= 35: grup = '26-35'
+    else: grup = '36-45'
+    
+    t_grup = TAULES_BVMT[grup]
+    
+    return {
+        'E1_Pe': buscar_pe_taula(e1, t_grup['E1']),
+        'RT_Pe': buscar_pe_taula(rt, t_grup['RT']),
+        'RD_Pe': buscar_pe_taula(rd, t_grup['RD']),
+        'ID_Pe': buscar_pe_taula(id_val, t_grup['ID'])
     }
 
-    // 3. WAIS-III Clave
-    function calcWAIS_Cod(pd, edat) {
-      if (isNaN(pd)) return "-";
-      if (pd > 90) return 15;
-      if (pd > 70) return 12;
-      if (pd > 50) return 9;
-      if (pd > 30) return 6;
-      return 3;
-    }
-    function calcWAIS_Emp(pd, edat) {
-      if (isNaN(pd)) return "-";
-      if (pd >= 17) return ">75";
-      if (pd >= 12) return "50-75";
-      if (pd >= 7) return "25-50";
-      return "<25";
-    }
-    function calcWAIS_Copia(pd, edat) { return calcWAIS_Emp(pd, edat); }
-    function calcWAIS_ML(pd, edat) { return calcWAIS_Emp(pd, edat); }
 
-    // 4. BVMT-R
-    function calcBVMT(pd, type, edat) {
-      if (isNaN(pd)) return "-";
-      if (pd >= 11) return 14;
-      if (pd >= 8) return 10;
-      if (pd >= 5) return 6;
-      return 2;
+# ==============================================================================
+# 5. MEMÒRIA LÒGICA (WMS-IV)
+# ==============================================================================
+
+TAULES_ML = {
+    '16-24': {
+        'I': {1: (0, 10), 2: (11, 12), 3: (13, 13), 4: (14, 15), 5: (16, 17), 6: (18, 18), 7: (19, 20), 8: (21, 22), 9: (23, 24), 10: (25, 25), 11: (26, 28), 12: (29, 30), 13: (31, 32), 14: (33, 34), 15: (35, 37), 16: (38, 39), 17: (40, 42), 18: (43, 44), 19: (45, 50)},
+        'II': {1: (0, 4), 2: (5, 7), 3: (8, 9), 4: (10, 11), 5: (12, 13), 6: (14, 15), 7: (16, 17), 8: (18, 19), 9: (20, 21), 10: (22, 23), 11: (24, 25), 12: (26, 27), 13: (28, 29), 14: (30, 31), 15: (32, 33), 16: (34, 35), 17: (36, 37), 18: (38, 39), 19: (40, 50)}
+    },
+    '25-34': {
+        'I': {1: (0, 8), 2: (9, 10), 3: (11, 11), 4: (12, 13), 5: (14, 15), 6: (16, 17), 7: (18, 19), 8: (20, 21), 9: (22, 23), 10: (24, 25), 11: (26, 27), 12: (28, 29), 13: (30, 31), 14: (32, 33), 15: (34, 35), 16: (36, 37), 17: (38, 39), 18: (40, 41), 19: (42, 50)},
+        'II': {1: (0, 2), 2: (3, 4), 3: (5, 7), 4: (8, 9), 5: (10, 11), 6: (12, 14), 7: (15, 16), 8: (17, 18), 9: (19, 20), 10: (21, 23), 11: (24, 25), 12: (26, 27), 13: (28, 28), 14: (29, 31), 15: (32, 33), 16: (34, 35), 17: (36, 37), 18: (38, 39), 19: (40, 50)}
+    },
+    '35-44': {
+        'I': {1: (0, 8), 2: (9, 10), 3: (11, 11), 4: (12, 13), 5: (14, 15), 6: (16, 17), 7: (18, 19), 8: (20, 21), 9: (22, 23), 10: (24, 25), 11: (26, 27), 12: (28, 29), 13: (30, 31), 14: (32, 33), 15: (34, 35), 16: (36, 37), 17: (38, 39), 18: (40, 41), 19: (42, 50)},
+        'II': {1: (0, 0), 2: (1, 2), 3: (3, 5), 4: (6, 7), 5: (8, 10), 6: (11, 12), 7: (13, 15), 8: (16, 17), 9: (18, 19), 10: (20, 22), 11: (23, 24), 12: (25, 26), 13: (27, 28), 14: (29, 30), 15: (31, 32), 16: (33, 34), 17: (35, 36), 18: (37, 38), 19: (39, 50)}
     }
-    function calcBVMTSesgo(aci, fal) {
-      if (isNaN(aci) || isNaN(fal)) return "-";
-      if (fal === 0) return (aci >= 5) ? "0.5 (Normal)" : "Conservador";
-      return (aci / (aci + fal)).toFixed(2);
+}
+
+def avalia_memoria_logica(ml_i, ml_ii, edat):
+    if edat <= 24: grup = '16-24'
+    elif edat <= 34: grup = '25-34'
+    else: grup = '35-44'
+    
+    return {
+        'ML_I_Pe': buscar_pe_taula(ml_i, TAULES_ML[grup]['I']),
+        'ML_II_Pe': buscar_pe_taula(ml_ii, TAULES_ML[grup]['II'])
     }
 
-    // 5. WMS-IV ML
-    function calcWMS_ML(pd, type, edat) {
-      if (isNaN(pd)) return "-";
-      if (pd >= 35) return 15;
-      if (pd >= 25) return 11;
-      if (pd >= 15) return 7;
-      return 3;
-    }
-    function calcWMS_Rec2(pd, edat) {
-      if (isNaN(pd)) return "-";
-      return pd >= 20 ? ">16%" : "<10%";
-    }
 
-    // 6. SPAN Dígits
-    function calcDigits(pd, type, edat, edu) {
-      if (isNaN(pd)) return "-";
-      let basePe = pd * 1.5;
-      let adj = (edu > 12) ? -1 : (edu < 8 ? 1 : 0);
-      return Math.min(18, Math.max(2, Math.round(basePe + adj)));
-    }
+# ==============================================================================
+# 6. SPAN DÍGITS (WAIS-IV)
+# ==============================================================================
 
-    // 7. TMT
-    function calcTMT(pd, type, edat, edu) {
-      if (isNaN(pd)) return "-";
-      // TMT és un temps (més temps = pitjor Pe)
-      let pe = 10;
-      if (type === 'A') {
-        if (pd <= 25) pe = 15; else if (pd <= 40) pe = 11; else if (pd <= 60) pe = 7; else pe = 3;
-      } else {
-        if (pd <= 60) pe = 15; else if (pd <= 100) pe = 11; else if (pd <= 150) pe = 7; else pe = 3;
-      }
-      let adj = (edu >= 15) ? 1 : (edu <= 8 ? -1 : 0);
-      return Math.min(18, Math.max(2, pe + adj));
+TAULA_DIGITS_EDAT = {
+    '18-49': {
+        'DD': {2: (0, 0), 3: (1, 3), 4: (4, 4), 8: (5, 5), 10: (6, 6), 13: (7, 7), 15: (8, 8), 18: (9, 16)},
+        'DI': {2: (0, 0), 3: (1, 2), 7: (3, 3), 8: (4, 4), 11: (5, 5), 13: (6, 6), 15: (7, 7), 18: (8, 16)}
+    }
+}
+
+TAULA_AJUST_DIGITS_ESCOLARITAT = {
+    'DD': {8: 1, 9: 0, 10: 0, 11: 0, 12: 0, 13: 0, 14: 0, 15: 0, 16: -1, 17: -1, 18: -1, 19: -1, 20: -1},
+    'DI': {8: 1, 9: 1, 10: 0, 11: 0, 12: 0, 13: 0, 14: 0, 15: 0, 16: 0, 17: 0, 18: -1, 19: -1, 20: -1}
+}
+
+def avalia_digits(dd_pd, di_pd, edat, escolaritat_anys):
+    pe_dd_base = buscar_pe_taula(dd_pd, TAULA_DIGITS_EDAT['18-49']['DD'])
+    pe_di_base = buscar_pe_taula(di_pd, TAULA_DIGITS_EDAT['18-49']['DI'])
+    
+    esc_clamped = max(8, min(20, escolaritat_anys))
+    ajust_dd = TAULA_AJUST_DIGITS_ESCOLARITAT['DD'].get(esc_clamped, 0)
+    ajust_di = TAULA_AJUST_DIGITS_ESCOLARITAT['DI'].get(esc_clamped, 0)
+    
+    return {
+        'DD_Pe': arrodoneix_pe(pe_dd_base + ajust_dd),
+        'DI_Pe': arrodoneix_pe(pe_di_base + ajust_di)
     }
 
-    // 8. STROOP
-    function calcStroop(pd, type, edat, edu) {
-      if (isNaN(pd)) return "-";
-      let basePe = 10;
-      if (pd >= 100) basePe = 14; else if (pd >= 70) basePe = 10; else if (pd >= 40) basePe = 6; else basePe = 2;
-      let adj = (edu > 12) ? -1 : 0;
-      return Math.min(18, Math.max(2, basePe + adj));
+
+# ==============================================================================
+# 7. TMT (Trail Making Test A & B)
+# ==============================================================================
+
+TAULA_TMT_BASE = {
+    'A': {2: (55, 999), 3: (49, 54), 4: (47, 48), 5: (45, 46), 6: (39, 44), 7: (35, 38), 8: (32, 34), 9: (29, 31), 10: (25, 28), 11: (23, 24), 12: (21, 22), 13: (19, 20), 14: (17, 18), 15: (16, 16), 16: (14, 15), 17: (13, 13), 18: (0, 12)},
+    'B': {2: (158, 999), 3: (141, 157), 4: (127, 140), 5: (104, 126), 6: (95, 103), 7: (78, 94), 8: (68, 77), 9: (62, 67), 10: (55, 61), 11: (50, 54), 12: (45, 49), 13: (40, 44), 14: (35, 39), 15: (33, 34), 16: (31, 32), 17: (23, 30), 18: (0, 22)}
+}
+
+def avalia_tmt(tmt_a_temps, tmt_b_temps, edat, escolaritat_anys):
+    pe_a_base = buscar_pe_taula(tmt_a_temps, TAULA_TMT_BASE['A'])
+    pe_b_base = buscar_pe_taula(tmt_b_temps, TAULA_TMT_BASE['B'])
+    
+    # Formula d'ajust per edat i escolaritat (TMT A)
+    # y = Pe_base - (-0.069 * (edat - 32.2) + 0.274 * (escolaritat - 12.3))
+    ajust_demog = - (-0.069 * (edat - 32.2) + 0.274 * (escolaritat_anys - 12.3))
+    
+    return {
+        'TMT_A_Pe': arrodoneix_pe(pe_a_base + ajust_demog),
+        'TMT_B_Pe': arrodoneix_pe(pe_b_base + ajust_demog)
     }
 
-    // 9. PMR
-    function calcPMR(pd, type, edat) {
-      if (isNaN(pd)) return "-";
-      if (pd >= 20) return 15;
-      if (pd >= 14) return 11;
-      if (pd >= 8) return 7;
-      return 3;
+
+# ==============================================================================
+# 8. STROOP (P, C, PC)
+# ==============================================================================
+
+TAULA_STROOP_BASE = {
+    'P': {2: (0, 71), 3: (72, 77), 4: (78, 87), 5: (88, 93), 6: (94, 98), 7: (99, 101), 8: (102, 104), 9: (105, 108), 10: (109, 114), 11: (115, 118), 12: (119, 122), 13: (123, 126), 14: (127, 133), 15: (134, 141), 16: (142, 144), 17: (145, 153), 18: (154, 999)},
+    'C': {2: (0, 48), 3: (49, 50), 4: (51, 54), 5: (55, 60), 6: (61, 62), 7: (63, 66), 8: (67, 70), 9: (71, 73), 10: (74, 78), 11: (79, 83), 12: (84, 86), 13: (87, 90), 14: (91, 93), 15: (94, 98), 16: (99, 101), 17: (102, 103), 18: (104, 999)},
+    'PC': {2: (0, 24), 3: (25, 26), 4: (27, 29), 5: (30, 33), 6: (34, 38), 7: (39, 40), 8: (41, 43), 9: (44, 45), 10: (46, 50), 11: (51, 53), 12: (54, 56), 13: (57, 59), 14: (60, 62), 15: (63, 68), 16: (69, 71), 17: (72, 77), 18: (78, 999)}
+}
+
+def avalia_stroop(p_pd, c_pd, pc_pd, edat, escolaritat_anys):
+    pe_p = buscar_pe_taula(p_pd, TAULA_STROOP_BASE['P'])
+    pe_c = buscar_pe_taula(c_pd, TAULA_STROOP_BASE['C'])
+    pe_pc = buscar_pe_taula(pc_pd, TAULA_STROOP_BASE['PC'])
+    
+    # Regressió d'ajust per escolaritat/edat
+    ajust_p = - (0.215 * (escolaritat_anys - 12))
+    ajust_c = - (0.260 * (escolaritat_anys - 12))
+    ajust_pc = - (0.245 * (escolaritat_anys - 12))
+    
+    return {
+        'Stroop_P_Pe': arrodoneix_pe(pe_p + ajust_p),
+        'Stroop_C_Pe': arrodoneix_pe(pe_c + ajust_c),
+        'Stroop_PC_Pe': arrodoneix_pe(pe_pc + ajust_pc)
     }
 
-    // 10. Animals
-    function calcAnimals(pd, edat, edu) {
-      if (isNaN(pd)) return "-";
-      let basePe = 10;
-      if (pd >= 25) basePe = 14; else if (pd >= 18) basePe = 10; else if (pd >= 12) basePe = 6; else basePe = 2;
-      let adj = (edu >= 16) ? -1 : (edu <= 8 ? 1 : 0);
-      return Math.min(18, Math.max(2, basePe + adj));
+
+# ==============================================================================
+# 9. PMR (Paraules i Matrius de Raven)
+# ==============================================================================
+
+TAULA_PMR = {
+    'P': {2: (1, 6), 3: (7, 7), 4: (8, 8), 5: (9, 10), 6: (11, 11), 7: (12, 12), 8: (13, 13), 9: (14, 15), 10: (16, 18), 11: (19, 19), 12: (20, 21), 13: (22, 22), 14: (23, 24), 15: (25, 26), 16: (27, 27), 17: (28, 29), 18: (30, 99)},
+    'M': {2: (1, 4), 3: (5, 5), 4: (6, 6), 5: (7, 7), 6: (8, 8), 7: (9, 9), 8: (10, 11), 9: (12, 13), 10: (14, 15), 11: (16, 17), 12: (18, 18), 13: (19, 20), 14: (21, 22), 15: (23, 24), 16: (25, 25), 17: (26, 27), 18: (28, 99)},
+    'R': {2: (4, 4), 3: (5, 5), 4: (6, 6), 5: (7, 7), 6: (8, 8), 7: (9, 10), 8: (11, 11), 9: (12, 12), 10: (13, 14), 11: (15, 16), 12: (17, 17), 13: (18, 19), 14: (20, 20), 15: (21, 22), 16: (23, 23), 17: (24, 24), 18: (25, 99)}
+}
+
+def avalia_pmr(p_pd, m_pd, r_pd):
+    return {
+        'PMR_P_Pe': buscar_pe_taula(p_pd, TAULA_PMR['P']),
+        'PMR_M_Pe': buscar_pe_taula(m_pd, TAULA_PMR['M']),
+        'PMR_R_Pe': buscar_pe_taula(r_pd, TAULA_PMR['R'])
     }
 
-    // 11. MoCA
-    function calcMoCA(pd, edat, edu) {
-      if (isNaN(pd)) return "-";
-      let adjPD = pd + (edu < 12 ? 1 : 0);
-      if (adjPD >= 26) return 13;
-      if (adjPD >= 22) return 9;
-      if (adjPD >= 18) return 5;
-      return 2;
-    }
-    function calcMoCA_MIS(pd, edat, edu, sexe) {
-      if (isNaN(pd)) return "-";
-      if (pd >= 12) return ">75";
-      if (pd >= 9) return "25-75";
-      return "<25";
-    }
 
-    // =================================================================================
-    // NAVEGACIÓ I GESTIÓ DE LA BASE DE DADES (PÀGINA 1 I PÀGINA 2)
-    // =================================================================================
+# ==============================================================================
+# 10. ANIMALS (Fluïdesa Verbal Semàntica)
+# ==============================================================================
 
-    function switchPage(pageNum) {
-      const p1 = document.getElementById('page1');
-      const p2 = document.getElementById('page2');
-      const b1 = document.getElementById('btnTab1');
-      const b2 = document.getElementById('btnTab2');
+TAULES_ANIMALS = {
+    '18-49': {2: (1, 11), 3: (12, 13), 4: (14, 14), 5: (15, 16), 6: (17, 17), 7: (18, 19), 8: (20, 20), 9: (21, 22), 10: (23, 24), 11: (25, 26), 12: (27, 28), 13: (29, 30), 14: (31, 31), 15: (32, 33), 16: (34, 36), 17: (37, 37), 18: (38, 99)},
+    '50-56': {2: (0, 10), 4: (11, 12), 5: (13, 13), 6: (14, 14), 7: (15, 15), 8: (16, 17), 9: (18, 19), 10: (20, 21), 11: (22, 23), 12: (24, 26), 13: (27, 29), 14: (30, 31), 15: (32, 32), 17: (33, 33), 18: (34, 99)}
+}
 
-      if (pageNum === 1) {
-        p1.classList.remove('hidden'); p2.classList.add('hidden');
-        b1.className = "px-5 py-2.5 font-bold text-sm rounded-lg bg-pink-600 text-white shadow-sm transition-all";
-        b2.className = "px-5 py-2.5 font-bold text-sm rounded-lg text-slate-600 hover:bg-slate-200/60 transition-all flex items-center gap-2";
-      } else {
-        p1.classList.add('hidden'); p2.classList.remove('hidden');
-        b2.className = "px-5 py-2.5 font-bold text-sm rounded-lg bg-pink-600 text-white shadow-sm transition-all flex items-center gap-2";
-        b1.className = "px-5 py-2.5 font-bold text-sm rounded-lg text-slate-600 hover:bg-slate-200/60 transition-all";
-        renderDatabaseTable();
-      }
-    }
+def avalia_animals(pd_animals, edat):
+    if edat <= 49: grup = '18-49'
+    else: grup = '50-56'
+    
+    return buscar_pe_taula(pd_animals, TAULES_ANIMALS[grup])
 
-    function saveCurrentParticipant() {
-      calculateAll();
-      const customId = document.getElementById('subject_id').value.trim();
-      
-      const record = {
-        subject_id: customId !== "" ? customId : "P-" + (database.length + 1).toString().padStart(3, '0'),
-        data_registre: new Date().toLocaleDateString(),
-        sexe: document.getElementById('sexe').value,
-        edat: parseInt(document.getElementById('edat').value) || 0,
-        escolaritat: parseInt(document.getElementById('escolaritat').value) || 0,
-        ...activeData
-      };
 
-      database.push(record);
-      localStorage.setItem('mets_database', JSON.stringify(database));
-      updateBadge();
-      alert(" Pacient " + record.subject_id + " afegit correctament a la Base de Dades!");
+# ==============================================================================
+# 11. MoCA (Montreal Cognitive Assessment & MoCA-MIS)
+# ==============================================================================
+
+TAULES_MOCA = {
+    '18-25': {3: (0, 22), 4: (23, 24), 5: (25, 25), 6: (26, 26), 8: (27, 27), 9: (28, 28), 11: (29, 29), 18: (30, 30)},
+    '26-35': {2: (0, 20), 3: (21, 21), 4: (22, 22), 5: (23, 23), 6: (24, 25), 7: (26, 26), 8: (27, 27), 9: (28, 28), 11: (29, 29), 18: (30, 30)},
+    '36-45': {2: (0, 18), 3: (19, 19), 4: (20, 21), 5: (22, 23), 7: (24, 24), 8: (25, 26), 9: (27, 27), 10: (28, 28), 11: (29, 29), 18: (30, 30)}
+}
+
+# MoCA-MIS percentils segons sexe (Home vs Dona)
+PERCENTILS_MOCA_MIS = {
+    'H': {15: 99, 14: 95, 13: 83, 12: 63, 11: 43, 10: 28, 9: 19, 8: 13, 7: 10, 6: 8, 5: 6, 4: 6, 3: 5, 2: 5, 1: 5},
+    'D': {15: 99, 14: 92, 13: 75, 12: 52, 11: 33, 10: 20, 9: 12, 8: 8, 7: 6, 6: 4, 5: 4, 4: 3, 3: 3, 2: 3, 1: 3}
+}
+
+def avalia_moca(moca_pd, mis_pd, edat, sexe):
+    """
+    MoCA: Calcula la Pe del MoCA global i el percentil del MoCA-MIS tenint en compte el SEXE.
+    """
+    if edat <= 25: grup = '18-25'
+    elif edat <= 35: grup = '26-35'
+    else: grup = '36-45'
+    
+    pe_moca = buscar_pe_taula(moca_pd, TAULES_MOCA[grup])
+    
+    es_dona = str(sexe).strip().lower() in ['d', 'dona', 'mujer', 'f', 'female']
+    clau_sexe = 'D' if es_dona else 'H'
+    
+    percentil_mis = PERCENTILS_MOCA_MIS[clau_sexe].get(mis_pd, "<5")
+    
+    return {
+        'MoCA_Pe': pe_moca,
+        'MoCA_MIS_Percentil': percentil_mis
     }
 
-    function renderDatabaseTable() {
-      const header = document.getElementById('dbTableHeader');
-      const body = document.getElementById('dbTableBody');
 
-      header.innerHTML = FULL_COLUMNS.map(col => `<th class="px-3 py-2 border-r border-slate-200 whitespace-nowrap font-bold">${col}</th>`).join('') + '<th class="px-3 py-2">Accions</th>';
+# ==============================================================================
+# EXEMPLE DE PROVA DE TOT EL SISTEMA (EXECUCIÓ)
+# ==============================================================================
 
-      if (database.length === 0) {
-        body.innerHTML = `<tr><td colspan="${FULL_COLUMNS.length + 1}" class="text-center py-8 text-slate-400">Encara no hi ha cap pacient registrat.</td></tr>`;
-        return;
-      }
-
-      body.innerHTML = database.map((row, idx) => `
-        <tr class="hover:bg-pink-50/40 transition">
-          ${FULL_COLUMNS.map(col => `<td class="px-3 py-2 border-r border-slate-100 whitespace-nowrap">${row[col] !== undefined ? row[col] : ''}</td>`).join('')}
-          <td class="px-3 py-2 text-center">
-            <button onclick="deleteRow(${idx})" class="text-red-600 font-bold hover:underline">Eliminar</button>
-          </td>
-        </tr>
-      `).join('');
+if __name__ == "__main__":
+    # Dades del pacient de prova
+    pacient = {
+        'edat': 45,
+        'sexe': 'Dona', # Prova amb 'Dona' o 'Home' per veure la diferència
+        'escolaritat_anys': 12
     }
+    
+    print("=== RESULTATS DE LES PROVES VIRTUALMETS ===\n")
+    print(f"Pacient: Edat={pacient['edat']}, Sexe={pacient['sexe']}, Escolaritat={pacient['escolaritat_anys']} anys\n")
 
-    function updateBadge() {
-      document.getElementById('recordBadge').innerText = database.length;
-    }
-
-    function deleteRow(idx) {
-      if (confirm("Segur que vols eliminar aquest registre?")) {
-        database.splice(idx, 1);
-        localStorage.setItem('mets_database', JSON.stringify(database));
-        renderDatabaseTable();
-        updateBadge();
-      }
-    }
-
-    function clearDatabase() {
-      if (confirm("⚠️ Atenció: Això esborrarà TOTS els pacients de la Base de Dades. Continuar?")) {
-        database = [];
-        localStorage.removeItem('mets_database');
-        renderDatabaseTable();
-        updateBadge();
-      }
-    }
-
-    function exportToCSV() {
-      if (database.length === 0) {
-        alert("La base de dades està buida.");
-        return;
-      }
-
-      let csv = "\uFEFF"; // BOM per a UTF-8 a Excel
-      csv += FULL_COLUMNS.join(";") + "\n";
-
-      database.forEach(row => {
-        const line = FULL_COLUMNS.map(col => `"${row[col] !== undefined ? row[col] : ''}"`).join(";");
-        csv += line + "\n";
-      });
-
-      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.setAttribute("href", url);
-      link.setAttribute("download", `VirtualMETS_BD_${new Date().toISOString().slice(0,10)}.csv`);
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
-
-    // Execució Inicial
-    document.addEventListener("DOMContentLoaded", () => {
-      calculateAll();
-      updateBadge();
-    });
-  </script>
-</body>
-</html>
+    # 1. TAP
+    print("1. TAP Pe:", avalia_tap(pd=22, edat=pacient['edat']))
+    
+    # 2. RAVLT (Afectat per SEXE en Reconeixement)
+    res_ravlt = avalia_ravlt(a1=6, a2=9, a3=11, a4=12, a5=13, b1=6, a6=10, a7=10, rec_a=14, rec_b=6, 
+                             edat=pacient['edat'], sexe=pacient['sexe'])
+    print("2. RAVLT:", res_ravlt)
+    
+    # 3. Clave de Números
+    print("3. Clave de Números Pe:", avalia_clave_numeros(pd_codif=55, edat=pacient['edat']))
+    
+    # 4. BVMT-R
+    print("4. BVMT-R:", avalia_bvmt(e1=7, e2=10, e3=11, e4=9, edat=pacient['edat']))
+    
+    # 5. ML WMS-IV
+    print("5. Memòria Lògica:", avalia_memoria_logica(ml_i=22, ml_ii=18, edat=pacient['edat']))
+    
+    # 6. SPAN Dígits WAIS-IV
+    print("6. Dígits WAIS-IV:", avalia_digits(dd_pd=6, di_pd=5, edat=pacient['edat'], escolaritat_anys=pacient['escolaritat_anys']))
+    
+    # 7. TMT
+    print("7. TMT:", avalia_tmt(tmt_a_temps=25, tmt_b_temps=60, edat=pacient['edat'], escolaritat_anys=pacient['escolaritat_anys']))
+    
+    # 8. STROOP
+    print("8. Stroop:", avalia_stroop(p_pd=100, c_pd=70, pc_pd=42, edat=pacient['edat'], escolaritat_anys=pacient['escolaritat_anys']))
+    
+    # 9. PMR
+    print("9. PMR:", avalia_pmr(p_pd=15, m_pd=12, r_pd=12))
+    
+    # 10. Animals
+    print("10. Animals Pe:", avalia_animals(pd_animals=22, edat=pacient['edat']))
+    
+    # 11. MoCA (Afectat per SEXE a la taula MoCA-MIS)
+    print("11. MoCA & MoCA-MIS:", avalia_moca(moca_pd=26, mis_pd=12, edat=pacient['edat'], sexe=pacient['sexe']))
