@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Full de Càlcul Neuropsicològic - Barems TAP i WAIS-III Exactes</title>
+  <title>Plataforma de Càlcul Neuropsicològic</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     body { background-color: #f1f5f9; font-family: system-ui, -apple-system, sans-serif; }
@@ -18,7 +18,7 @@
     <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-200 flex flex-col md:flex-row items-center justify-between gap-4">
       <div>
         <h1 class="text-xl font-bold text-slate-800">Plataforma Neuropsicològica Tipus Excel</h1>
-        <p class="text-xs text-slate-500 mt-0.5">Correcció exacta per Edat i Escolaritat (NEURONORMA / WAIS-III)</p>
+        <p class="text-xs text-slate-500 mt-0.5">Barems exactes TAP (NEURONORMA) i WAIS-III Clave de Números</p>
       </div>
       <button type="button" onclick="exportFullExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm py-2.5 px-4 rounded-lg shadow transition flex items-center gap-2">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
@@ -57,7 +57,7 @@
         <div class="md:col-span-2">
           <label class="block text-xs font-semibold text-slate-600 mb-1">Selecciona Escala / Prova *</label>
           <select id="scaleSelect" class="w-full px-3 py-2 border rounded-lg text-sm bg-white font-medium focus:ring-2 focus:ring-blue-500 outline-none">
-            <option value="TAP">TAP (Test de Acentuación de Palabras)</option>
+            <option value="TAP">TAP (Test de Acentuación de Palabras - NEURONORMA)</option>
             <option value="WAIS_COD">Clave de Números (WAIS-III) - 1. Codificación</option>
             <option value="WAIS_EMP">Clave de Números (WAIS-III) - 2. Emparejamiento (E)</option>
             <option value="WAIS_COP">Clave de Números (WAIS-III) - 3. Copia</option>
@@ -156,8 +156,8 @@
       headerRow.innerHTML = FULL_COLUMNS.map(col => `<th class="px-3 py-2 text-[11px] whitespace-nowrap bg-slate-100 border">${col}</th>`).join('');
     };
 
-    // --- TABLA TAP: PASO 1 (PD + EDAD -> Pe) ---
-    const TAP_AGE_MATRIX = [
+    // TABLA EXACTA 1 DEL TAP: RANGS PER EDAT (PD -> Pe)
+    const TAP_AGE_RULES = [
       { pe: 2,  ranges: [[0,13], [0,11], [0,15], [0,9],  [0,8],   [0,8],   [0,10],  [0,10],  [0,4]] },
       { pe: 3,  ranges: [[14,14], [12,13], [16,16], [10,13], null,    null,    null,    null,    [5,14]] },
       { pe: 4,  ranges: [[15,18], [14,17], [17,18], [14,17], [9,9],   null,    null,    null,    [15,18]] },
@@ -174,8 +174,8 @@
       { pe: 18, ranges: [[30,30], [30,30], [30,30], [30,30], [30,30], [30,30], [30,30], [30,30], [30,30]] }
     ];
 
-    // --- TABLA TAP: PASO 2 (Pe + ESCOLARIDAD 0-20 -> Pe Corregido) ---
-    const TAP_EDU_TABLE = [
+    // TABLA EXACTA 2 DEL TAP: AJUST PER ESCOLARITAT (0 a 20 anys)
+    const TAP_EDU_MATRIX = [
       [9,8,7,7,6,6,5,5,4,4,3,3,2,1,1,0,0,-1,-1,-2,-2],
       [10,9,8,8,7,7,6,6,5,5,4,4,3,2,2,1,1,0,0,-1,-1],
       [11,10,9,9,8,8,7,7,6,6,5,5,4,3,3,2,2,1,1,0,0],
@@ -195,38 +195,53 @@
       [25,24,23,23,22,22,21,21,20,20,19,19,18,17,17,16,16,15,15,14,14]
     ];
 
-    function getAgeGroupColumnIndex(age) {
-      if (age <= 25) return 0;
-      if (age <= 35) return 1;
-      if (age <= 45) return 2;
-      if (age <= 55) return 3;
-      if (age <= 65) return 4;
-      if (age <= 70) return 5;
-      if (age <= 75) return 6;
-      if (age <= 80) return 7;
-      return 8; // 81-86+
+    function getAgeColumnIndex(age) {
+      if (age >= 18 && age <= 25) return 0;
+      if (age >= 26 && age <= 35) return 1;
+      if (age >= 36 && age <= 45) return 2;
+      if (age >= 46 && age <= 55) return 3;
+      if (age >= 56 && age <= 65) return 4;
+      if (age >= 66 && age <= 70) return 5;
+      if (age >= 71 && age <= 75) return 6;
+      if (age >= 76 && age <= 80) return 7;
+      if (age >= 81) return 8;
+      return 0;
     }
 
     function calculateTAP(pd, age, edu) {
-      const colIdx = getAgeGroupColumnIndex(age);
+      const colIdx = getAgeColumnIndex(age);
       let peAge = null;
 
-      for (const row of TAP_AGE_MATRIX) {
-        const range = row.ranges[colIdx];
-        if (range && pd >= range[0] && pd <= range[1]) {
-          peAge = row.pe;
+      // Cerca exacta del Pe segons la taula d'edat
+      for (const rule of TAP_AGE_RULES) {
+        const range = rule.ranges[colIdx];
+        if (range !== null && pd >= range[0] && pd <= range[1]) {
+          peAge = rule.pe;
           break;
         }
       }
 
+      // Si no es troba en un interval directe (cas de forats o extrems)
       if (peAge === null) {
         if (pd >= 30) peAge = 18;
-        else peAge = 2;
+        else if (pd <= 4) peAge = 2;
+        else {
+          // Cerca del Pe més proper
+          let lastValidPe = 2;
+          for (const rule of TAP_AGE_RULES) {
+            const range = rule.ranges[colIdx];
+            if (range !== null) {
+              if (pd >= range[0]) lastValidPe = rule.pe;
+            }
+          }
+          peAge = lastValidPe;
+        }
       }
 
+      // Ajust per Escolaritat
       const eduClamped = Math.min(Math.max(edu, 0), 20);
       const peRowIndex = Math.min(Math.max(peAge - 2, 0), 16);
-      return TAP_EDU_TABLE[peRowIndex][eduClamped];
+      return TAP_EDU_MATRIX[peRowIndex][eduClamped];
     }
 
     function addScaleToExcel() {
