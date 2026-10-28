@@ -17,15 +17,23 @@
     <div class="border-b border-slate-100 pb-5 mb-6">
       <div class="flex items-center justify-between">
         <div>
-          <h1 class="text-2xl font-bold text-slate-800">Calculadora TAP</h1>
-          <p class="text-sm text-slate-500 mt-1">Test de Acentuación de Palabras (Barem NEURONORMA)</p>
+          <h1 class="text-2xl font-bold text-slate-800">Calculadora Neuropsicològica</h1>
+          <p class="text-sm text-slate-500 mt-1">Avaluació de Barems NEURONORMA</p>
         </div>
-        <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-1 rounded-full">Edat + Escolaritat</span>
+        <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-1 rounded-full">TAP</span>
       </div>
     </div>
 
     <form id="tapForm" onsubmit="return false;">
       
+      <!-- Selecció de Prova (Només TAP) -->
+      <div class="mb-5">
+        <label for="testSelect" class="block text-sm font-semibold text-slate-700 mb-1">Prova Neuropsicològica</label>
+        <select id="testSelect" class="w-full px-4 py-2.5 border border-slate-300 rounded-lg bg-slate-50 text-slate-800 font-medium outline-none cursor-not-allowed" disabled>
+          <option value="TAP" selected>TAP (Test de Acentuación de Palabras)</option>
+        </select>
+      </div>
+
       <!-- Dades Demogràfiques i PD -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
         
@@ -85,48 +93,47 @@
       <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-4">
         
         <div class="bg-white p-3 rounded-lg border border-slate-200 text-center">
+          <span class="block text-xs font-medium text-slate-400 uppercase">Puntuació Directa (PD)</span>
+          <span id="resPD" class="text-2xl font-extrabold text-slate-700">-</span>
+        </div>
+
+        <div class="bg-white p-3 rounded-lg border border-slate-200 text-center">
           <span class="block text-xs font-medium text-slate-400 uppercase">Pe (Ajustat Edat)</span>
           <span id="resPeAge" class="text-2xl font-extrabold text-slate-700">-</span>
         </div>
 
-        <div class="bg-white p-3 rounded-lg border border-blue-200 text-center">
-          <span class="block text-xs font-semibold text-blue-600 uppercase">Pe Corregit (Escolaritat)</span>
+        <div class="bg-white p-3 rounded-lg border border-blue-200 text-center col-span-2 md:col-span-1">
+          <span class="block text-xs font-semibold text-blue-600 uppercase">Puntuació Escalar (Pe Final)</span>
           <span id="resPeFinal" class="text-2xl font-extrabold text-blue-600">-</span>
         </div>
 
-        <div class="bg-white p-3 rounded-lg border border-slate-200 text-center col-span-2 md:col-span-1">
-          <span class="block text-xs font-medium text-slate-400 uppercase">Percentil Estimat</span>
-          <span id="resPercentile" class="text-lg font-bold text-slate-700">-</span>
-        </div>
-
       </div>
 
-      <div class="bg-white p-4 rounded-lg border border-slate-200">
-        <h3 class="text-xs font-bold text-slate-400 uppercase mb-1">Classificació / Interpretació Clínica</h3>
+      <div class="bg-white p-4 rounded-lg border border-slate-200 mb-4">
+        <div class="flex justify-between items-center mb-1">
+          <h3 class="text-xs font-bold text-slate-400 uppercase">Classificació / Interpretació Clínica</h3>
+          <span id="resPercentile" class="text-xs font-semibold text-slate-500"></span>
+        </div>
         <p id="resInterp" class="text-sm font-semibold text-slate-800"></p>
       </div>
-    </div>
 
-    <!-- Secció informativa barems -->
-    <div class="mt-6 pt-4 border-t border-slate-100 text-center">
-      <button onclick="toggleBarems()" class="text-xs text-blue-600 hover:underline font-medium">
-        Veure Taula de Barems Utilitzada
+      <!-- Botó per Descarregar Excel / CSV -->
+      <button type="button" onclick="exportToExcel()" 
+              class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2.5 px-4 rounded-lg shadow transition flex items-center justify-center gap-2">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+        </svg>
+        Descarregar Resultat en Excel (.csv)
       </button>
-    </div>
-
-    <div id="baremModal" class="hidden mt-4 p-4 bg-slate-100 rounded-lg text-xs text-slate-600 overflow-x-auto max-h-60">
-      <p class="font-bold mb-2">Taula d'Ajust per Edat (PD &rarr; Pe):</p>
-      <p>Aplica els rangs oficials NEURONORMA per als grups d'edat de 18-25 fins a 81-86 anys.</p>
-      <p class="font-bold mt-3 mb-2">Taula d'Ajust per Escolaritat (Pe &rarr; Pe Corregit):</p>
-      <p>Ajusta el Pe segons els anys totals d'escolarització formal (0 a 20 anys).</p>
     </div>
 
   </div>
 
   <script>
-    // 1. DADES BAREMS EDAT
-    const AGE_GROUPS = ["18-25", "26-35", "36-45", "46-55", "56-65", "66-70", "71-75", "76-80", "81-86"];
+    // Variables globals per a l'exportació
+    let currentData = null;
 
+    // 1. DADES BAREMS EDAT
     const AGE_TABLE = [
       { pe: 2,  ranges: [[0, 13], [0, 11], [0, 15], [0, 9], [0, 8], [0, 8], [0, 10], [0, 10], [0, 4]] },
       { pe: 3,  ranges: [[14, 14], [12, 13], [16, 16], [10, 13], null, null, null, null, [5, 14]] },
@@ -178,13 +185,14 @@
       if (age >= 71 && age <= 75) return 6;
       if (age >= 76 && age <= 80) return 7;
       if (age >= 81 && age <= 86) return 8;
-      if (age > 86) return 8; // Mantenim l'últim grup per a edats superiors
+      if (age > 86) return 8;
       return -1;
     }
 
     function calculateTAP() {
       const age = parseInt(document.getElementById('age').value);
       const edu = parseInt(document.getElementById('edu').value);
+      const gender = document.getElementById('gender').value;
       const pd = parseFloat(document.getElementById('pd').value);
 
       if (isNaN(age) || isNaN(edu) || isNaN(pd)) {
@@ -211,7 +219,7 @@
       if (peAge === null) {
         if (pd < 0) peAge = 2;
         else if (pd >= 30) peAge = 18;
-        else peAge = 2; // Valor per defecte si queda en buit intermedi
+        else peAge = 2;
       }
 
       // 2. Trobar Pe Final ajustat per Escolaritat
@@ -246,7 +254,21 @@
         badgeColor = "bg-red-100 text-red-800";
       }
 
+      // Guardar dades actuals per a exportació
+      currentData = {
+        test: "TAP (Test de Acentuación de Palabras)",
+        pd: pd,
+        peAge: peAge,
+        peFinal: peFinal,
+        age: age,
+        edu: edu,
+        gender: gender,
+        percentile: percentile,
+        interp: interp
+      };
+
       // Actualitzar interfície
+      document.getElementById('resPD').innerText = pd;
       document.getElementById('resPeAge').innerText = peAge;
       document.getElementById('resPeFinal').innerText = peFinal;
       document.getElementById('resPercentile').innerText = percentile;
@@ -262,11 +284,40 @@
     function resetForm() {
       document.getElementById('tapForm').reset();
       document.getElementById('resultsCard').classList.add('hidden');
+      currentData = null;
     }
 
-    function toggleBarems() {
-      const el = document.getElementById('baremModal');
-      el.classList.toggle('hidden');
+    // Funció per generar i descarregar fitxer Excel/CSV en columnes
+    function exportToExcel() {
+      if (!currentData) return;
+
+      // Capçaleres de les columnes i fila de valors
+      const headers = ["Prova", "Puntuació Directa (PD)", "Puntuació Escalar (Pe Final)", "Pe Ajustat Edat", "Edat", "Escolaritat", "Gènere", "Percentil", "Classificació"];
+      const values = [
+        `"${currentData.test}"`,
+        currentData.pd,
+        currentData.peFinal,
+        currentData.peAge,
+        currentData.age,
+        currentData.edu,
+        `"${currentData.gender}"`,
+        `"${currentData.percentile}"`,
+        `"${currentData.interp}"`
+      ];
+
+      // Formatar contingut en CSV separat per comes amb codificació UTF-8
+      const csvContent = "\uFEFF" + headers.join(";") + "\n" + values.join(";");
+
+      // Crear l'enllaç de descàrrega
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute("download", `Resultat_TAP_PD${currentData.pd}_Pe${currentData.peFinal}.csv`);
+      document.body.appendChild(link);
+      
+      link.click();
+      document.body.removeChild(link);
     }
   </script>
 </body>
