@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculadora de Puntuació Corregida Neuropsicològica</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #1e293b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --radius: 12px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      background-color: var(--card-bg);
+      width: 100%;
+      max-width: 600px;
+      padding: 32px;
+      border-radius: var(--radius);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+      border: 1px solid var(--border);
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      margin-bottom: 8px;
+      color: var(--text);
+    }
+
+    p.subtitle {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-bottom: 24px;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      font-size: 0.875rem;
+      margin-bottom: 6px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    @media (max-width: 480px) {
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .buttons {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    button {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background-color 0.2s;
+    }
+
+    .btn-primary {
+      background-color: var(--primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background-color: var(--primary-hover);
+    }
+
+    .btn-secondary {
+      background-color: #f1f5f9;
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      background-color: #e2e8f0;
+    }
+
+    .results-card {
+      margin-top: 28px;
+      padding: 20px;
+      border-radius: 10px;
+      background-color: #f0f9ff;
+      border: 1px solid #bae6fd;
+      display: none;
+    }
+
+    .results-card.active {
+      display: block;
+    }
+
+    .results-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .result-item {
+      background-color: #ffffff;
+      padding: 12px;
+      border-radius: 6px;
+      border: 1px solid #e0f2fe;
+      text-align: center;
+    }
+
+    .result-value {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .result-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .interpretation {
+      margin-top: 12px;
+      padding: 10px;
+      background-color: #ffffff;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Calculadora de Puntuació Corregida</h1>
+    <p class="subtitle">Ajust demogràfic per edat, escolaritat i gènere</p>
+
+    <form id="calcForm">
+      <div class="form-group">
+        <label for="testSelect">Selecciona la Prova / Test</label>
+        <select id="testSelect" required>
+          <option value="testA">Test Memòria Verbal (Exemple Regressió)</option>
+          <option value="testB">Test Atenció / Velocitat (Exemple Matriu Barem)</option>
+        </select>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="age">Edat (Anys)</label>
+          <input type="number" id="age" min="18" max="100" placeholder="Ex: 45" required>
+        </div>
+
+        <div class="form-group">
+          <label for="education">Escolaritat (Anys)</label>
+          <input type="number" id="education" min="0" max="25" placeholder="Ex: 12" required>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="gender">Gènere</label>
+          <select id="gender" required>
+            <option value="home">Home</option>
+            <option value="dona">Dona</option>
+            <option value="altre">Altre / No especificat</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="rawScore">Puntuació Directa (PD)</label>
+          <input type="number" id="rawScore" step="0.1" placeholder="Ex: 35" required>
+        </div>
+      </div>
+
+      <div class="buttons">
+        <button type="button" class="btn-secondary" id="resetBtn">Netejar</button>
+        <button type="submit" class="btn-primary">Calcular</button>
+      </div>
+    </form>
+
+    <div class="results-card" id="resultsCard">
+      <h3>Resultats de la Correcció</h3>
+      
+      <div class="results-grid">
+        <div class="result-item">
+          <div class="result-label">Puntuació Corregida (PC)</div>
+          <div class="result-value" id="pcValue">-</div>
+        </div>
+        <div class="result-item">
+          <div class="result-label">Puntuació Escalar (T / Scaled)</div>
+          <div class="result-value" id="scaledValue">-</div>
+        </div>
+      </div>
+
+      <div class="interpretation" id="interpText">
+        Interpretació: -
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const TEST_CONFIG = {
+      testA: {
+        type: 'regression',
+        meanAge: 50,
+        meanEdu: 12,
+        coefAge: -0.15,
+        coefEdu: 0.25,
+        coefGender: { home: 0, dona: 0.5, altre: 0 },
+        toScaledScore: (pc) => Math.round(50 + (pc - 30) * 2) 
+      },
+      testB: {
+        type: 'regression',
+        meanAge: 45,
+        meanEdu: 10,
+        coefAge: -0.2,
+        coefEdu: 0.3,
+        coefGender: { home: 0, dona: 0, altre: 0 },
+        toScaledScore: (pc) => Math.round(10 + (pc - 20) * 0.5)
+      }
+    };
+
+    function calculateCorrectedScore(testKey, age, edu, gender, rawScore) {
+      const config = TEST_CONFIG[testKey];
+      if (!config) return null;
+
+      const genderAdjust = config.coefGender[gender] || 0;
+      const ageDiff = age - config.meanAge;
+      const eduDiff = edu - config.meanEdu;
+
+      let pc = rawScore - (config.coefAge * ageDiff) - (config.coefEdu * eduDiff) + genderAdjust;
+      pc = Math.round(pc * 100) / 100;
+
+      const scaled = config.toScaledScore(pc);
+      const interpretation = getInterpretation(scaled);
+
+      return { pc, scaled, interpretation };
+    }
+
+    function getInterpretation(scaledScore) {
+      if (scaledScore >= 65) return "Rendiment Alt / Superior";
+      if (scaledScore >= 40) return "Rendiment Normal / Promig";
+      if (scaledScore >= 30) return "Lleu Dèficit / Limítrofe";
+      return "Dèficit Significatiu / Alterat";
+    }
+
+    const form = document.getElementById('calcForm');
+    const resetBtn = document.getElementById('resetBtn');
+    const resultsCard = document.getElementById('resultsCard');
+
+    function updateResults() {
+      const testKey = document.getElementById('testSelect').value;
+      const age = parseFloat(document.getElementById('age').value);
+      const edu = parseFloat(document.getElementById('education').value);
+      const gender = document.getElementById('gender').value;
+      const rawScore = parseFloat(document.getElementById('rawScore').value);
+
+      if (!isNaN(age) && !isNaN(edu) && !isNaN(rawScore)) {
+        const res = calculateCorrectedScore(testKey, age, edu, gender, rawScore);
+
+        if (res) {
+          document.getElementById('pcValue').innerText = res.pc;
+          document.getElementById('scaledValue').innerText = res.scaled;
+          document.getElementById('interpText').innerText = `Classificació: ${res.interpretation}`;
+          resultsCard.classList.add('active');
+        }
+      } else {
+        resultsCard.classList.remove('active');
+      }
+    }
+
+    form.addEventListener('input', updateResults);
+
+    resetBtn.addEventListener('click', () => {
+      form.reset();
+      resultsCard.classList.remove('active');
+    });
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      updateResults();
+    });
+  </script>
+</body>
+</html>
