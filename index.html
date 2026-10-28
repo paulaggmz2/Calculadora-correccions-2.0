@@ -3,22 +3,23 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Plataforma Neuropsicològica - TAP, WAIS-III & RAVLT</title>
+  <title>Plataforma Neuropsicològica - Full Directe</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    body { background-color: #f1f5f9; font-family: system-ui, -apple-system, sans-serif; }
+    body { background-color: #f8fafc; font-family: system-ui, -apple-system, sans-serif; }
     .excel-table th, .excel-table td { border: 1px solid #cbd5e1; }
+    input[type="number"] { text-align: center; }
   </style>
 </head>
-<body class="p-4 md:p-6 min-h-screen">
+<body class="p-3 md:p-6 min-h-screen">
 
   <div class="max-w-7xl mx-auto space-y-6">
     
-    <!-- Capçalera -->
+    <!-- Capçalera principal -->
     <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-200 flex flex-col md:flex-row items-center justify-between gap-4">
       <div>
-        <h1 class="text-xl font-bold text-slate-800">Plataforma Neuropsicològica Tipus Excel</h1>
-        <p class="text-xs text-slate-500 mt-0.5">Barems d'Edat/Escolaritat/Sexe per a TAP, WAIS-III i RAVLT (Assajos 1-5, B, A6, A7, Rec. A i B)</p>
+        <h1 class="text-2xl font-bold text-slate-800">Plataforma Neuropsicològica Unificada</h1>
+        <p class="text-xs text-slate-500 mt-1">Càlcul automàtic en temps real per al TAP, WAIS-III, RAVLT i BVMT-R</p>
       </div>
       <button type="button" onclick="exportFullExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm py-2.5 px-4 rounded-lg shadow transition flex items-center gap-2">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
@@ -26,80 +27,236 @@
       </button>
     </div>
 
-    <!-- Formulari Unificat -->
-    <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 space-y-4">
-      <h2 class="text-sm font-bold text-slate-700 uppercase tracking-wide border-b pb-2">Entrada de Dades i Càlcul</h2>
-      
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+    <!-- Dades Demogràfiques -->
+    <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+      <h2 class="text-sm font-bold text-slate-700 uppercase tracking-wide border-b pb-2 mb-4">1. Dades Demogràfiques del Participant</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
         <div>
-          <label class="block text-xs font-semibold text-slate-600 mb-1">Codi Participant (METS_XX) *</label>
-          <input type="text" id="partCode" placeholder="Ex: METS_01" class="w-full px-3 py-2 border rounded-lg font-bold text-blue-900 uppercase text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+          <label class="block text-xs font-semibold text-slate-600 mb-1">Codi Participant *</label>
+          <input type="text" id="partCode" oninput="calculateAll()" placeholder="Ex: METS_01" class="w-full px-3 py-2 border rounded-lg font-bold text-blue-900 uppercase text-sm focus:ring-2 focus:ring-blue-500 outline-none">
         </div>
         <div>
           <label class="block text-xs font-semibold text-slate-600 mb-1">Edat (Anys) *</label>
-          <input type="number" id="partAge" placeholder="Ex: 55" class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+          <input type="number" id="partAge" oninput="calculateAll()" placeholder="Ex: 45" class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none">
         </div>
         <div>
-          <label class="block text-xs font-semibold text-slate-600 mb-1">Escolaritat (Anys) *</label>
-          <input type="number" id="partEdu" placeholder="Ex: 12" value="12" min="0" max="20" class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+          <label class="block text-xs font-semibold text-slate-600 mb-1">Escolaritat (Anys 0-20) *</label>
+          <input type="number" id="partEdu" oninput="calculateAll()" value="12" min="0" max="20" class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none">
         </div>
         <div>
           <label class="block text-xs font-semibold text-slate-600 mb-1">Sexe *</label>
-          <select id="partGender" class="w-full px-2 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+          <select id="partGender" onchange="calculateAll()" class="w-full px-2 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none">
             <option value="Dona">Dona / Mujer</option>
             <option value="Home">Home / Hombre</option>
-            <option value="Altre">Altre</option>
           </select>
         </div>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 border-t pt-4">
-        <div class="md:col-span-2">
-          <label class="block text-xs font-semibold text-slate-600 mb-1">Selecciona Escala / Prova *</label>
-          <select id="scaleSelect" class="w-full px-3 py-2 border rounded-lg text-sm bg-white font-medium focus:ring-2 focus:ring-blue-500 outline-none">
-            <optgroup label="TAP & WAIS-III">
-              <option value="TAP">TAP (Test de Acentuación de Palabras - NEURONORMA)</option>
-              <option value="WAIS_COD">Clave de Números (WAIS-III) - 1. Codificación</option>
-              <option value="WAIS_EMP">Clave de Números (WAIS-III) - 2. Emparejamiento (E)</option>
-              <option value="WAIS_COP">Clave de Números (WAIS-III) - 3. Copia</option>
-              <option value="WAIS_ML">Clave de Números (WAIS-III) - 4. Memoria Libre (M.L.)</option>
-            </optgroup>
-            <optgroup label="RAVLT (Rey Auditory Verbal Learning Test)">
-              <option value="RAVLT_A1">RAVLT - Assaig 1 (A1)</option>
-              <option value="RAVLT_A2">RAVLT - Assaig 2 (A2)</option>
-              <option value="RAVLT_A3">RAVLT - Assaig 3 (A3)</option>
-              <option value="RAVLT_A4">RAVLT - Assaig 4 (A4)</option>
-              <option value="RAVLT_A5">RAVLT - Assaig 5 (A5)</option>
-              <option value="RAVLT_TOTAL">RAVLT - Total Assajos 1-5 (A1-A5)</option>
-              <option value="RAVLT_B1">RAVLT - Llista B (B1)</option>
-              <option value="RAVLT_A6">RAVLT - Memòria Immediata Llista A (A6)</option>
-              <option value="RAVLT_A7">RAVLT - Memòria Diferida Llista A (A7)</option>
-              <option value="RAVLT_REC_A">RAVLT - Reconeixement Llista A</option>
-              <option value="RAVLT_REC_B">RAVLT - Reconeixement Llista B</option>
-            </optgroup>
-          </select>
-        </div>
-        <div>
-          <label class="block text-xs font-semibold text-slate-600 mb-1">Puntuació Directa (PD) *</label>
-          <input type="number" id="scalePD" step="any" placeholder="Ex: 10" class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none">
-        </div>
-      </div>
-
-      <div class="flex gap-3 pt-2">
-        <button type="button" onclick="addScaleToExcel()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs py-2.5 rounded-lg transition shadow">
-          + Calcular i Afegir al Full Excel
-        </button>
-        <button type="button" onclick="clearCurrentParticipant()" class="bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold text-xs px-4 py-2.5 rounded-lg transition">
-          Netejar Tot
-        </button>
       </div>
     </div>
 
-    <!-- Vista de la Taula Tipus Excel -->
+    <!-- Seccions de Proves en Fila (Sense Desplegables) -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+      <!-- TAP i WAIS-III -->
+      <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 space-y-4">
+        <h2 class="text-sm font-bold text-slate-700 uppercase tracking-wide border-b pb-2">2. TAP & WAIS-III (Clave de Números)</h2>
+        <div class="space-y-3 text-xs">
+          
+          <div class="grid grid-cols-12 items-center gap-2 bg-slate-50 p-2 rounded-lg border">
+            <span class="col-span-6 font-semibold text-slate-700">TAP (Acentuación Palabras)</span>
+            <input type="number" id="pd_tap" oninput="calculateAll()" placeholder="PD" class="col-span-3 px-2 py-1 border rounded bg-white">
+            <span id="pe_tap" class="col-span-3 font-bold text-center text-blue-800 bg-blue-50 py-1 rounded border border-blue-200">-</span>
+          </div>
+
+          <div class="grid grid-cols-12 items-center gap-2 bg-slate-50 p-2 rounded-lg border">
+            <span class="col-span-6 font-semibold text-slate-700">WAIS-III: 1. Codificación</span>
+            <input type="number" id="pd_wais_cod" oninput="calculateAll()" placeholder="PD" class="col-span-3 px-2 py-1 border rounded bg-white">
+            <span id="pe_wais_cod" class="col-span-3 font-bold text-center text-blue-800 bg-blue-50 py-1 rounded border border-blue-200">-</span>
+          </div>
+
+          <div class="grid grid-cols-12 items-center gap-2 bg-slate-50 p-2 rounded-lg border">
+            <span class="col-span-6 font-semibold text-slate-700">WAIS-III: 2. Emparejamiento</span>
+            <input type="number" id="pd_wais_emp" oninput="calculateAll()" placeholder="PD" class="col-span-3 px-2 py-1 border rounded bg-white">
+            <span id="pc_wais_emp" class="col-span-3 font-bold text-center text-blue-800 bg-blue-50 py-1 rounded border border-blue-200">-</span>
+          </div>
+
+          <div class="grid grid-cols-12 items-center gap-2 bg-slate-50 p-2 rounded-lg border">
+            <span class="col-span-6 font-semibold text-slate-700">WAIS-III: 3. Copia</span>
+            <input type="number" id="pd_wais_cop" oninput="calculateAll()" placeholder="PD" class="col-span-3 px-2 py-1 border rounded bg-white">
+            <span id="pc_wais_cop" class="col-span-3 font-bold text-center text-blue-800 bg-blue-50 py-1 rounded border border-blue-200">-</span>
+          </div>
+
+          <div class="grid grid-cols-12 items-center gap-2 bg-slate-50 p-2 rounded-lg border">
+            <span class="col-span-6 font-semibold text-slate-700">WAIS-III: 4. Memoria Libre</span>
+            <input type="number" id="pd_wais_ml" oninput="calculateAll()" placeholder="PD" class="col-span-3 px-2 py-1 border rounded bg-white">
+            <span id="pc_wais_ml" class="col-span-3 font-bold text-center text-blue-800 bg-blue-50 py-1 rounded border border-blue-200">-</span>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- RAVLT -->
+      <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 space-y-4">
+        <h2 class="text-sm font-bold text-slate-700 uppercase tracking-wide border-b pb-2">3. RAVLT (Rey Auditory Verbal Learning)</h2>
+        <div class="space-y-2 text-xs">
+          
+          <div class="grid grid-cols-12 items-center gap-2 bg-slate-50 p-1.5 rounded border">
+            <span class="col-span-6 font-semibold text-slate-700">Assaig 1 (A1)</span>
+            <input type="number" id="pd_ravlt_a1" oninput="calculateAll()" placeholder="PD" class="col-span-3 px-2 py-1 border rounded bg-white">
+            <span id="pe_ravlt_a1" class="col-span-3 font-bold text-center text-blue-800 bg-blue-50 py-1 rounded border border-blue-200">-</span>
+          </div>
+
+          <div class="grid grid-cols-12 items-center gap-2 bg-slate-50 p-1.5 rounded border">
+            <span class="col-span-6 font-semibold text-slate-700">Assaig 2 (A2)</span>
+            <input type="number" id="pd_ravlt_a2" oninput="calculateAll()" placeholder="PD" class="col-span-3 px-2 py-1 border rounded bg-white">
+            <span id="pe_ravlt_a2" class="col-span-3 font-bold text-center text-blue-800 bg-blue-50 py-1 rounded border border-blue-200">-</span>
+          </div>
+
+          <div class="grid grid-cols-12 items-center gap-2 bg-slate-50 p-1.5 rounded border">
+            <span class="col-span-6 font-semibold text-slate-700">Assaig 3 (A3)</span>
+            <input type="number" id="pd_ravlt_a3" oninput="calculateAll()" placeholder="PD" class="col-span-3 px-2 py-1 border rounded bg-white">
+            <span id="pe_ravlt_a3" class="col-span-3 font-bold text-center text-blue-800 bg-blue-50 py-1 rounded border border-blue-200">-</span>
+          </div>
+
+          <div class="grid grid-cols-12 items-center gap-2 bg-slate-50 p-1.5 rounded border">
+            <span class="col-span-6 font-semibold text-slate-700">Assaig 4 (A4)</span>
+            <input type="number" id="pd_ravlt_a4" oninput="calculateAll()" placeholder="PD" class="col-span-3 px-2 py-1 border rounded bg-white">
+            <span id="pe_ravlt_a4" class="col-span-3 font-bold text-center text-blue-800 bg-blue-50 py-1 rounded border border-blue-200">-</span>
+          </div>
+
+          <div class="grid grid-cols-12 items-center gap-2 bg-slate-50 p-1.5 rounded border">
+            <span class="col-span-6 font-semibold text-slate-700">Assaig 5 (A5)</span>
+            <input type="number" id="pd_ravlt_a5" oninput="calculateAll()" placeholder="PD" class="col-span-3 px-2 py-1 border rounded bg-white">
+            <span id="pe_ravlt_a5" class="col-span-3 font-bold text-center text-blue-800 bg-blue-50 py-1 rounded border border-blue-200">-</span>
+          </div>
+
+          <div class="grid grid-cols-12 items-center gap-2 bg-amber-50 p-1.5 rounded border border-amber-200">
+            <span class="col-span-6 font-bold text-amber-900">Suma Total (A1–A5)</span>
+            <span id="pd_ravlt_total" class="col-span-3 font-bold text-center text-amber-900">0</span>
+            <span id="pe_ravlt_total" class="col-span-3 font-bold text-center text-amber-900 bg-amber-100 py-1 rounded border border-amber-300">-</span>
+          </div>
+
+          <div class="grid grid-cols-12 items-center gap-2 bg-slate-50 p-1.5 rounded border">
+            <span class="col-span-6 font-semibold text-slate-700">Llista B (B1)</span>
+            <input type="number" id="pd_ravlt_b1" oninput="calculateAll()" placeholder="PD" class="col-span-3 px-2 py-1 border rounded bg-white">
+            <span id="pe_ravlt_b1" class="col-span-3 font-bold text-center text-blue-800 bg-blue-50 py-1 rounded border border-blue-200">-</span>
+          </div>
+
+          <div class="grid grid-cols-12 items-center gap-2 bg-slate-50 p-1.5 rounded border">
+            <span class="col-span-6 font-semibold text-slate-700">Memòria Immediata (A6)</span>
+            <input type="number" id="pd_ravlt_a6" oninput="calculateAll()" placeholder="PD" class="col-span-3 px-2 py-1 border rounded bg-white">
+            <span id="pe_ravlt_a6" class="col-span-3 font-bold text-center text-blue-800 bg-blue-50 py-1 rounded border border-blue-200">-</span>
+          </div>
+
+          <div class="grid grid-cols-12 items-center gap-2 bg-slate-50 p-1.5 rounded border">
+            <span class="col-span-6 font-semibold text-slate-700">Memòria Diferida (A7)</span>
+            <input type="number" id="pd_ravlt_a7" oninput="calculateAll()" placeholder="PD" class="col-span-3 px-2 py-1 border rounded bg-white">
+            <span id="pe_ravlt_a7" class="col-span-3 font-bold text-center text-blue-800 bg-blue-50 py-1 rounded border border-blue-200">-</span>
+          </div>
+
+          <div class="grid grid-cols-12 items-center gap-2 bg-slate-50 p-1.5 rounded border">
+            <span class="col-span-6 font-semibold text-slate-700">Reconeixement Llista A</span>
+            <input type="number" id="pd_ravlt_rec_a" oninput="calculateAll()" placeholder="PD" class="col-span-3 px-2 py-1 border rounded bg-white">
+            <span id="pe_ravlt_rec_a" class="col-span-3 font-bold text-center text-blue-800 bg-blue-50 py-1 rounded border border-blue-200">-</span>
+          </div>
+
+          <div class="grid grid-cols-12 items-center gap-2 bg-slate-50 p-1.5 rounded border">
+            <span class="col-span-6 font-semibold text-slate-700">Reconeixement Llista B</span>
+            <input type="number" id="pd_ravlt_rec_b" oninput="calculateAll()" placeholder="PD" class="col-span-3 px-2 py-1 border rounded bg-white">
+            <span id="pe_ravlt_rec_b" class="col-span-3 font-bold text-center text-blue-800 bg-blue-50 py-1 rounded border border-blue-200">-</span>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+    <!-- SECCIÓ ESPECIAL: BVMT-R -->
+    <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 space-y-4">
+      <h2 class="text-sm font-bold text-slate-700 uppercase tracking-wide border-b pb-2">4. BVMT-R (Brief Visuospatial Memory Test - Revised)</h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        
+        <!-- Entrada d'Assajos i Càlculs Directes -->
+        <div class="space-y-3 text-xs md:col-span-2">
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-slate-50 p-3 rounded-lg border">
+            <div>
+              <label class="block font-semibold mb-1">Ensayo 1 (E1)</label>
+              <input type="number" id="bvmt_e1" oninput="calculateAll()" class="w-full p-1.5 border rounded bg-white">
+            </div>
+            <div>
+              <label class="block font-semibold mb-1">Ensayo 2 (E2)</label>
+              <input type="number" id="bvmt_e2" oninput="calculateAll()" class="w-full p-1.5 border rounded bg-white">
+            </div>
+            <div>
+              <label class="block font-semibold mb-1">Ensayo 3 (E3)</label>
+              <input type="number" id="bvmt_e3" oninput="calculateAll()" class="w-full p-1.5 border rounded bg-white">
+            </div>
+            <div>
+              <label class="block font-semibold mb-1">Recuerdo Dif (E4)</label>
+              <input type="number" id="bvmt_e4" oninput="calculateAll()" class="w-full p-1.5 border rounded bg-white">
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 bg-slate-50 p-3 rounded-lg border">
+            <div>
+              <label class="block font-semibold mb-1">Aciertos (0-6)</label>
+              <input type="number" id="bvmt_aciertos" oninput="calculateAll()" class="w-full p-1.5 border rounded bg-white">
+            </div>
+            <div>
+              <label class="block font-semibold mb-1">Falsos Positivos</label>
+              <input type="number" id="bvmt_fp" oninput="calculateAll()" class="w-full p-1.5 border rounded bg-white">
+            </div>
+            <div class="col-span-2 sm:col-span-1">
+              <label class="block font-semibold mb-1 text-slate-500">% Retenido (Calc)</label>
+              <span id="bvmt_pct_retenido" class="block w-full p-1.5 text-center font-bold bg-slate-200 rounded text-slate-700">-</span>
+            </div>
+          </div>
+
+          <!-- Taula de Resultats Escalas BVMT-R -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-2 text-center">
+            <div class="bg-blue-50 p-2 rounded border border-blue-200">
+              <div class="text-[10px] text-blue-600 font-bold uppercase">Ensayo 1 Pe</div>
+              <div id="pe_bvmt_e1" class="text-lg font-bold text-blue-900">-</div>
+            </div>
+            <div class="bg-blue-50 p-2 rounded border border-blue-200">
+              <div class="text-[10px] text-blue-600 font-bold uppercase">Recuerdo Total Pe</div>
+              <div id="pe_bvmt_rt" class="text-lg font-bold text-blue-900">-</div>
+            </div>
+            <div class="bg-blue-50 p-2 rounded border border-blue-200">
+              <div class="text-[10px] text-blue-600 font-bold uppercase">Recuerdo Dif Pe</div>
+              <div id="pe_bvmt_rd" class="text-lg font-bold text-blue-900">-</div>
+            </div>
+            <div class="bg-blue-50 p-2 rounded border border-blue-200">
+              <div class="text-[10px] text-blue-600 font-bold uppercase">Índice Disc Pe</div>
+              <div id="pe_bvmt_id" class="text-lg font-bold text-blue-900">-</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Taula Sesgo Resposta i Valors Automàtics -->
+        <div class="bg-amber-50 p-3 rounded-lg border border-amber-200 space-y-2 text-xs flex flex-col justify-between">
+          <div>
+            <h3 class="font-bold text-amber-900 border-b border-amber-300 pb-1 mb-2 uppercase">Índices Automáticos BVMT-R</h3>
+            <div class="space-y-1.5">
+              <div class="flex justify-between"><span>Recuerdo Total (E1+E2+E3):</span><b id="calc_bvmt_rt">0</b></div>
+              <div class="flex justify-between"><span>Aprendizaje (Max(E2,E3)-E1):</span><b id="calc_bvmt_apr">0</b></div>
+              <div class="flex justify-between"><span>Índice Discriminación:</span><b id="calc_bvmt_id">0</b></div>
+            </div>
+          </div>
+
+          <div class="bg-white p-2.5 rounded border border-amber-300 mt-2">
+            <div class="text-[11px] font-bold text-amber-900">Sesgo de Respuesta (Matriz):</div>
+            <div id="calc_bvmt_sesgo" class="text-base font-extrabold text-amber-700 text-center mt-1">-</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Taula Tipus Excel (Vista Previa Generada) -->
     <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-200 overflow-hidden">
       <div class="flex items-center justify-between mb-4">
-        <h2 class="text-sm font-bold text-slate-700 uppercase tracking-wide">Matriu de Dades Excel (Vista Prèvia)</h2>
-        <span class="text-xs text-slate-400">S'actualitza automàticament</span>
+        <h2 class="text-sm font-bold text-slate-700 uppercase tracking-wide">Matriu de Dades Excel (Vista Prèvia en Temps Real)</h2>
       </div>
 
       <div class="overflow-x-auto border border-slate-200 rounded-lg max-h-96">
@@ -110,7 +267,7 @@
           <tbody id="tableBody" class="divide-y divide-slate-200 font-mono text-slate-800">
             <tr>
               <td colspan="15" class="text-center py-8 text-slate-400 italic">
-                Introdueix un participant i una puntuació per començar.
+                Omple les dades demogràfiques i puntuacions per generar la matriu.
               </td>
             </tr>
           </tbody>
@@ -130,38 +287,11 @@
       "ravlt_memoria_diferida_pe_pre", "ravlt_reconeixement_a_pd_pre", "ravlt_reconeixement_a_pe_pre", 
       "ravlt_reconeixement_b_pd_pre", "ravlt_reconeixement_b_pe_pre", "cn_codificacio_pd_pre", 
       "cn_codificacio_pe_pre", "cn_aparellament_pd_pre", "cn_aparellament_pc_pre", "cn_memoria_lliure_pd_pre", 
-      "cn_memoria_lliure_pc_pre", "cn_copia_pd_pre", "cn_copia_pc_pre", "omissions_pd_pre", "omissions_pt_pre", 
-      "commissions_pd_pre", "commissions_pt_pre", "hit_rt_pd_pre", "hit_rt_pt_pre", "hit_rt_std_error_pd_pre", 
-      "hit_rt_std_error_pt_pre", "variability_pd_pre", "variability_pt_pre", "detectability_pd_pre", 
-      "detectability_pt_pre", "response_style_pd_pre", "response_style_pt_pre", "perseverations_pd_pre", 
-      "perseverations_pt_pre", "hit_rt_block_change_pd_pre", "hit_rt_block_change_pt_pre", 
-      "hit_se_block_change_pd_pre", "hit_se_block_change_pt_pre", "hit_rt_isi_change_pd_pre", 
-      "hit_rt_isi_change_pt_pre", "hit_se_isi_change_pd_pre", "hit_se_isi_change_pt_pre", 
-      "bvmt_r_assaig_1_pd_pre", "bvmt_r_assaig_1_pe_pre", "bvmt_r_assaig_2_pd_pre", "bvmt_r_assaig_3_pd_pre", 
-      "bvmt_r_record_total_123_pd_pre", "bvmt_r_record_total_123_pe_pre", "bvmt_r_aprenentatge_pd_pre", 
-      "bvmt_r_record_diferit_4_pd_pre", "bvmt_r_record_diferit_4_pe_pre", "bvmt_r_reconeixement_encerts_pd_pre", 
-      "bvmt_r_reconeixement_falsos_positius_pd_pre", "bvmt_r_index_discriminacio_pd_pre", 
-      "bvmt_r_index_discriminacio_pe_pre", "bvmt_r_sesgo_resposta_pd_pre", "wms_ml_i_immediata_pd_pre", 
-      "wms_ml_i_immediata_pe_pre", "wms_ml_ii_diferida_pd_pre", "wms_ml_ii_diferida_pe_pre", 
-      "wms_reconeixement_pd_pre", "wms_reconeixement_percentatge_acumulat_pre", "digits_directes_span_pd_pre", 
-      "digits_directes_span_pe_pre", "digits_inversos_span_pd_pre", "digits_inversos_span_pe_pre", 
-      "tmt_a_pd_pre", "tmt_a_pe_pre", "tmt_b_pd_pre", "tmt_b_pe_pre", "wcst_total_correct_pd_pre", 
-      "wcst_total_errors_pd_pre", "wcst_total_errors_pt_pre", "wcst_perseverative_responses_pd_pre", 
-      "wcst_perseverative_responses_pt_pre", "wcst_perseverative_errors_pd_pre", 
-      "wcst_perseverative_errors_pt_pre", "wcst_nonperseverative_errors_pd_pre", 
-      "wcst_nonperseverative_errors_pt_pre", "wcst_conceptual_level_responses_pd_pre", 
-      "wcst_conceptual_level_responses_pt_pre", "wcst_categories_completed_pd_pre", 
-      "wcst_trials_to_complete_1st_category_pd_pre", "wcst_failure_to_maintain_set_pd_pre", 
-      "wcst_learning_to_learn_pd_pre", "wcst_aprendre_a_aprendre_pc_pre", "stroop_p_pd_pre", 
-      "stroop_p_pe_pre", "stroop_c_pd_pre", "stroop_c_pe_pre", "stroop_pc_pd_pre", "stroop_pc_pe_pre", 
-      "pmr_p_pd_pre", "pmr_p_pe_pre", "pmr_m_pd_pre", "pmr_m_pe_pre", "pmr_r_pd_pre", "pmr_r_pe_pre", 
-      "animals_pd_pre", "animals_pe_pre", "moca_visuoespacial_executiva_pre", "moca_identificacio_pre", 
-      "moca_atencio_serie_numeros_pre", "moca_atencio_serie_lletres_pre", "moca_atencio_resta_numeros_pre", 
-      "moca_atencio_total_pre", "moca_llenguatge_repeticio_pre", "moca_llenguatge_fluencia_pre", 
-      "moca_abstraccio_pre", "moca_record_diferit_pre", "moca_orientacio_pre", "moca_total_pd_pre", 
-      "moca_total_pe_pre", "moca_mis_pd_pre", "moca_mis_pc_pre", "fcr_exactitud_memoria_immediata_pd_pre", 
-      "fcr_construccio_memoria_immediata_pd_pre", "fcr_exactitud_memoria_diferida_pd_pre", 
-      "fcr_temps_memoria_immediata_pd_pre", "fcr_temps_memoria_diferida_pd_pre"
+      "cn_memoria_lliure_pc_pre", "cn_copia_pd_pre", "cn_copia_pc_pre", "bvmt_r_assaig_1_pd_pre", 
+      "bvmt_r_assaig_1_pe_pre", "bvmt_r_assaig_2_pd_pre", "bvmt_r_assaig_3_pd_pre", "bvmt_r_record_total_123_pd_pre", 
+      "bvmt_r_record_total_123_pe_pre", "bvmt_r_aprenentatge_pd_pre", "bvmt_r_record_diferit_4_pd_pre", 
+      "bvmt_r_record_diferit_4_pe_pre", "bvmt_r_reconeixement_encerts_pd_pre", "bvmt_r_reconeixement_falsos_positius_pd_pre", 
+      "bvmt_r_index_discriminacio_pd_pre", "bvmt_r_index_discriminacio_pe_pre", "bvmt_r_sesgo_resposta_pd_pre"
     ];
 
     let activeData = {};
@@ -171,7 +301,7 @@
       headerRow.innerHTML = FULL_COLUMNS.map(col => `<th class="px-3 py-2 text-[11px] whitespace-nowrap bg-slate-100 border">${col}</th>`).join('');
     };
 
-    // --- TABLA TAP: MATRIZ DE EDAD Y ESCOLARIDAD ---
+    // --- BAREMS MATRICIALS TAP ---
     const TAP_AGE_RULES = [
       { pe: 2,  ranges: [[0,13], [0,11], [0,15], [0,9],  [0,8],   [0,8],   [0,10],  [0,10],  [0,4]] },
       { pe: 3,  ranges: [[14,14], [12,13], [16,16], [10,13], null,    null,    null,    null,    [5,14]] },
@@ -209,20 +339,19 @@
       [25,24,23,23,22,22,21,21,20,20,19,19,18,17,17,16,16,15,15,14,14]
     ];
 
-    function getTapAgeColumnIndex(age) {
-      if (age <= 25) return 0;
-      if (age <= 35) return 1;
-      if (age <= 45) return 2;
-      if (age <= 55) return 3;
-      if (age <= 65) return 4;
-      if (age <= 70) return 5;
-      if (age <= 75) return 6;
-      if (age <= 80) return 7;
-      return 8;
-    }
+    function calcTAP(pd, age, edu) {
+      if (isNaN(pd) || isNaN(age)) return "-";
+      let colIdx = 0;
+      if (age <= 25) colIdx = 0;
+      else if (age <= 35) colIdx = 1;
+      else if (age <= 45) colIdx = 2;
+      else if (age <= 55) colIdx = 3;
+      else if (age <= 65) colIdx = 4;
+      else if (age <= 70) colIdx = 5;
+      else if (age <= 75) colIdx = 6;
+      else if (age <= 80) colIdx = 7;
+      else colIdx = 8;
 
-    function calculateTAP(pd, age, edu) {
-      const colIdx = getTapAgeColumnIndex(age);
       let peAge = null;
       for (const rule of TAP_AGE_RULES) {
         const range = rule.ranges[colIdx];
@@ -231,33 +360,25 @@
           break;
         }
       }
-      if (peAge === null) {
-        if (pd >= 30) peAge = 18;
-        else peAge = 2;
-      }
-      const eduClamped = Math.min(Math.max(edu, 0), 20);
+      if (peAge === null) peAge = (pd >= 30) ? 18 : 2;
+
+      const eduClamped = Math.min(Math.max(edu || 12, 0), 20);
       const peRowIndex = Math.min(Math.max(peAge - 2, 0), 16);
       return TAP_EDU_MATRIX[peRowIndex][eduClamped];
     }
 
-    // --- CÀLCULS RAVLT BASATS EN LES FÓRMULES OFICIALS ---
+    // --- RAVLT FORMULAS ---
     function roundPe(val) {
+      if (isNaN(val)) return "-";
       let clamped = Math.max(2, Math.min(18, val));
       return Math.round(clamped * 10) / 10;
     }
 
-    function getRavltAgeGroupIndex(age) {
-      if (age < 50) return 0; // 40-49
-      if (age < 60) return 1; // 50-59
-      if (age < 70) return 2; // 60-69
-      return 3;              // 70+
-    }
-
-    function calculateRAVLT(scaleKey, pd, age, gender) {
-      const ageIdx = getRavltAgeGroupIndex(age);
+    function calcRAVLT(scaleKey, pd, age, gender) {
+      if (isNaN(pd) || isNaN(age)) return "-";
+      let ageIdx = (age < 50) ? 0 : (age < 60) ? 1 : (age < 70) ? 2 : 3;
       const isWoman = (gender === "Dona");
 
-      // Normes per a Assajos Generals (A1 a A5, Total, B1, A6, A7)
       const RAVLT_PARAMS = {
         RAVLT_A1:    { mean: [6.6, 6.2, 5.9, 5.5],  sd: [1.7, 1.6, 1.6, 1.6] },
         RAVLT_A2:    { mean: [9.3, 9.0, 8.4, 7.7],  sd: [1.9, 1.9, 2.0, 2.1] },
@@ -270,114 +391,205 @@
         RAVLT_A7:    { mean: [10.2, 9.9, 8.8, 7.0], sd: [2.8, 3.2, 3.0, 2.4] }
       };
 
-      // Normes de Reconeixement diferenciades per Sexe
-      const RAVLT_REC_WOMEN = {
-        RAVLT_REC_A: { mean: [14.4, 13.7, 13.8, 13.6], sd: [0.8, 1.1, 1.1, 2.0] },
-        RAVLT_REC_B: { mean: [7.4, 5.7, 7.5, 7.5],     sd: [2.8, 2.4, 3.6, 3.7] }
-      };
-
-      const RAVLT_REC_MEN = {
-        RAVLT_REC_A: { mean: [14.2, 13.9, 12.4, 11.5], sd: [1.0, 0.9, 2.8, 2.6] },
-        RAVLT_REC_B: { mean: [6.9, 4.7, 4.9, 3.0],     sd: [2.6, 2.9, 2.7, 2.5] }
-      };
+      const REC_W = { RAVLT_REC_A: { m: [14.4, 13.7, 13.8, 13.6], s: [0.8, 1.1, 1.1, 2.0] }, RAVLT_REC_B: { m: [7.4, 5.7, 7.5, 7.5], s: [2.8, 2.4, 3.6, 3.7] } };
+      const REC_M = { RAVLT_REC_A: { m: [14.2, 13.9, 12.4, 11.5], s: [1.0, 0.9, 2.8, 2.6] }, RAVLT_REC_B: { m: [6.9, 4.7, 4.9, 3.0], s: [2.6, 2.9, 2.7, 2.5] } };
 
       let m, s;
-
       if (scaleKey === 'RAVLT_REC_A' || scaleKey === 'RAVLT_REC_B') {
-        const dict = isWoman ? RAVLT_REC_WOMEN : RAVLT_REC_MEN;
-        m = dict[scaleKey].mean[ageIdx];
-        s = dict[scaleKey].sd[ageIdx];
-      } else if (RAVLT_PARAMS[scaleKey]) {
+        const dict = isWoman ? REC_W : REC_M;
+        m = dict[scaleKey].m[ageIdx];
+        s = dict[scaleKey].s[ageIdx];
+      } else {
         m = RAVLT_PARAMS[scaleKey].mean[ageIdx];
         s = RAVLT_PARAMS[scaleKey].sd[ageIdx];
-      } else {
-        return 10;
       }
 
-      const z = (pd - m) / s;
-      const pe = (z * 3) + 10;
-      return roundPe(pe);
+      return roundPe(((pd - m) / s) * 3 + 10);
     }
 
-    // --- ACCIÓ PRINCIPAL D'AFEGIR A EXCEL ---
-    function addScaleToExcel() {
-      const code = document.getElementById('partCode').value.trim();
+    // --- BVMT-R BAREMS Y SESGO DE RESPUESTA ---
+    const BVMT_SESGO_MATRIX = [
+      [0.0, 0.70, 0.19, 0.28, 0.35, 0.41, 0.46],
+      [0.51, 0.80, 0.21, 0.31, 0.39, 0.45, 0.50],
+      [0.54, 0.20, 0.25, 0.36, 0.44, 0.50, 0.55],
+      [0.59, 0.30, 0.13, 0.30, 0.42, 0.50, 0.56],
+      [0.61, 0.65, 0.40, 0.17, 0.38, 0.50, 0.58],
+      [0.64, 0.69, 0.72, 0.50, 0.25, 0.50, 0.63],
+      [0.70, 0.75, 0.79, 0.81, 0.60, 0.50, 0.75]
+    ];
+
+    function calcBvmtSesgo(aciertos, fp) {
+      if (isNaN(aciertos) || isNaN(fp)) return "-";
+      let r = Math.min(Math.max(fp, 0), 6);
+      let c = Math.min(Math.max(aciertos, 0), 6);
+      return BVMT_SESGO_MATRIX[r][c];
+    }
+
+    const BVMT_AGE_TABLE = [
+      { pe: 2,  e1: [0,0], rt: [0,5], rd: [0,3], id: [0,3] },
+      { pe: 3,  e1: [1,2], rt: [6,9], rd: [4,6], id: [4,6] },
+      { pe: 4,  e1: [3,4], rt: [10,13], rd: [7,8], id: [7,8] },
+      { pe: 5,  e1: [5,5], rt: [14,16], rd: [9,9], id: [9,9] },
+      { pe: 6,  e1: [6,6], rt: [17,19], rd: [10,10], id: [10,10] },
+      { pe: 7,  e1: [7,7], rt: [20,22], rd: [11,11], id: [11,11] },
+      { pe: 8,  e1: [8,8], rt: [23,24], rd: [12,12], id: [12,12] },
+      { pe: 9,  e1: [9,9], rt: [25,27], rd: [13,13], id: [13,13] },
+      { pe: 10, e1: [10,10], rt: [28,29], rd: [14,14], id: [14,14] },
+      { pe: 11, e1: [11,11], rt: [30,31], rd: [15,15], id: [15,15] },
+      { pe: 12, e1: [12,12], rt: [32,36], rd: [16,16], id: [16,16] }
+    ];
+
+    const BVMT_EDU_ADJUST = [
+      [2,3,3,3,2,2,2,1,1,1,0,0,0,0,0,-1,-1,-1,-1,-2,-2],
+      [3,3,2,2,2,2,1,1,1,0,0,0,0,-1,-1,-1,-2,-2,-2,-2,-2],
+      [4,3,3,3,2,2,2,1,1,1,0,0,0,-1,-1,-2,-2,-2,-2,-2,-2],
+      [2,2,2,1,1,1,1,1,0,0,0,0,0,-1,-1,-1,-1,-2,-2,-2,-2]
+    ];
+
+    function calcBvmtPe(pd, field, edu) {
+      if (isNaN(pd)) return "-";
+      let basePe = 2;
+      for (const row of BVMT_AGE_TABLE) {
+        const range = row[field];
+        if (pd >= range[0] && pd <= range[1]) { basePe = row.pe; break; }
+        if (pd > range[1]) basePe = row.pe;
+      }
+      const eduClamped = Math.min(Math.max(edu || 12, 0), 20);
+      let mapIdx = (field === 'e1') ? 0 : (field === 'rt') ? 1 : (field === 'rd') ? 2 : 3;
+      let adj = BVMT_EDU_ADJUST[mapIdx][eduClamped];
+      return Math.max(2, Math.min(18, basePe + adj));
+    }
+
+    // --- FUNCIÓ PRINCIPAL DE CÀLCUL EN TEMPS REAL ---
+    function calculateAll() {
       const age = parseInt(document.getElementById('partAge').value);
-      const edu = parseInt(document.getElementById('partEdu').value);
+      const edu = parseInt(document.getElementById('partEdu').value) || 12;
       const gender = document.getElementById('partGender').value;
-      const pd = parseFloat(document.getElementById('scalePD').value);
 
-      if (!code) { alert("Escriu el Codi del Participant (ex: METS_01)."); return; }
-      if (isNaN(age)) { alert("Escriu l'Edat del participant."); return; }
-      if (isNaN(edu)) { alert("Escriu els Anys d'Escolaritat."); return; }
-      if (isNaN(pd)) { alert("Escriu la Puntuació Directa (PD)."); return; }
+      activeData.codi_participant = document.getElementById('partCode').value.trim();
 
-      activeData.codi_participant = code;
-      activeData._age = age;
-      activeData._edu = edu;
-      activeData._gender = gender;
+      // TAP
+      const tapPd = parseFloat(document.getElementById('pd_tap').value);
+      const tapPe = calcTAP(tapPd, age, edu);
+      document.getElementById('pe_tap').innerText = tapPe;
+      activeData.tap_pd_pre = isNaN(tapPd) ? "" : tapPd;
+      activeData.tap_pe_pre = tapPe;
 
-      const scale = document.getElementById('scaleSelect').value;
+      // WAIS-III
+      const waisCod = parseFloat(document.getElementById('pd_wais_cod').value);
+      document.getElementById('pe_wais_cod').innerText = isNaN(waisCod) ? "-" : Math.round(waisCod / 8);
+      activeData.cn_codificacio_pd_pre = isNaN(waisCod) ? "" : waisCod;
+      activeData.cn_codificacio_pe_pre = isNaN(waisCod) ? "" : Math.round(waisCod / 8);
 
-      if (scale === 'TAP') {
-        const peFinal = calculateTAP(pd, age, edu);
-        activeData.tap_pd_pre = pd;
-        activeData.tap_pe_pre = peFinal;
-      } 
-      else if (scale === 'WAIS_COD') {
-        let pe = 2;
-        if (pd >= 120) pe = 19;
-        else if (pd >= 100) pe = 15;
-        else if (pd >= 80) pe = 12;
-        else if (pd >= 60) pe = 9;
-        else if (pd >= 40) pe = 6;
+      const waisEmp = parseFloat(document.getElementById('pd_wais_emp').value);
+      document.getElementById('pc_wais_emp').innerText = isNaN(waisEmp) ? "-" : (waisEmp > 10 ? ">50" : "<50");
+      activeData.cn_aparellament_pd_pre = isNaN(waisEmp) ? "" : waisEmp;
+      activeData.cn_aparellament_pc_pre = isNaN(waisEmp) ? "" : (waisEmp > 10 ? ">50" : "<50");
 
-        activeData.cn_codificacio_pd_pre = pd;
-        activeData.cn_codificacio_pe_pre = pe;
-      }
-      else if (scale === 'WAIS_EMP' || scale === 'WAIS_COP' || scale === 'WAIS_ML') {
-        let keyPd = "cn_aparellament_pd_pre", keyPc = "cn_aparellament_pc_pre";
-        if (scale === 'WAIS_COP') { keyPd = "cn_copia_pd_pre"; keyPc = "cn_copia_pc_pre"; }
-        if (scale === 'WAIS_ML') { keyPd = "cn_memoria_lliure_pd_pre"; keyPc = "cn_memoria_lliure_pc_pre"; }
+      const waisCop = parseFloat(document.getElementById('pd_wais_cop').value);
+      document.getElementById('pc_wais_cop').innerText = isNaN(waisCop) ? "-" : (waisCop > 20 ? ">50" : "<50");
+      activeData.cn_copia_pd_pre = isNaN(waisCop) ? "" : waisCop;
+      activeData.cn_copia_pc_pre = isNaN(waisCop) ? "" : (waisCop > 20 ? ">50" : "<50");
 
-        let pcResult = "50";
-        if (pd < 5) pcResult = "< 10";
-        else if (pd > 15) pcResult = "> 90";
+      const waisMl = parseFloat(document.getElementById('pd_wais_ml').value);
+      document.getElementById('pc_wais_ml').innerText = isNaN(waisMl) ? "-" : (waisMl > 4 ? ">50" : "<50");
+      activeData.cn_memoria_lliure_pd_pre = isNaN(waisMl) ? "" : waisMl;
+      activeData.cn_memoria_lliure_pc_pre = isNaN(waisMl) ? "" : (waisMl > 4 ? ">50" : "<50");
 
-        activeData[keyPd] = pd;
-        activeData[keyPc] = pcResult;
-      }
-      else if (scale.startsWith('RAVLT_')) {
-        const peCalculated = calculateRAVLT(scale, pd, age, gender);
-        
-        const mapCols = {
-          RAVLT_A1:    ['ravlt_assaig_1_pd_pre', 'ravlt_assaig_1_pe_pre'],
-          RAVLT_A2:    ['ravlt_assaig_2_pd_pre', 'ravlt_assaig_2_pe_pre'],
-          RAVLT_A3:    ['ravlt_assaig_3_pd_pre', 'ravlt_assaig_3_pe_pre'],
-          RAVLT_A4:    ['ravlt_assaig_4_pd_pre', 'ravlt_assaig_4_pe_pre'],
-          RAVLT_A5:    ['ravlt_assaig_5_pd_pre', 'ravlt_assaig_5_pe_pre'],
-          RAVLT_TOTAL: ['ravlt_assaig_1_5_pd_pre', 'ravlt_assaig_1_5_pe_pre'],
-          RAVLT_B1:    ['ravlt_assaig_b_pd_pre', 'ravlt_assaig_b_pe_pre'],
-          RAVLT_A6:    ['ravlt_memoria_immediata_pd_pre', 'ravlt_memoria_immediata_pe_pre'],
-          RAVLT_A7:    ['ravlt_memoria_diferida_pd_pre', 'ravlt_memoria_diferida_pe_pre'],
-          RAVLT_REC_A: ['ravlt_reconeixement_a_pd_pre', 'ravlt_reconeixement_a_pe_pre'],
-          RAVLT_REC_B: ['ravlt_reconeixement_b_pd_pre', 'ravlt_reconeixement_b_pe_pre']
-        };
+      // RAVLT
+      const a1 = parseFloat(document.getElementById('pd_ravlt_a1').value);
+      const a2 = parseFloat(document.getElementById('pd_ravlt_a2').value);
+      const a3 = parseFloat(document.getElementById('pd_ravlt_a3').value);
+      const a4 = parseFloat(document.getElementById('pd_ravlt_a4').value);
+      const a5 = parseFloat(document.getElementById('pd_ravlt_a5').value);
 
-        if (mapCols[scale]) {
-          activeData[mapCols[scale][0]] = pd;
-          activeData[mapCols[scale][1]] = peCalculated;
-        }
-      }
+      document.getElementById('pe_ravlt_a1').innerText = calcRAVLT('RAVLT_A1', a1, age, gender);
+      document.getElementById('pe_ravlt_a2').innerText = calcRAVLT('RAVLT_A2', a2, age, gender);
+      document.getElementById('pe_ravlt_a3').innerText = calcRAVLT('RAVLT_A3', a3, age, gender);
+      document.getElementById('pe_ravlt_a4').innerText = calcRAVLT('RAVLT_A4', a4, age, gender);
+      document.getElementById('pe_ravlt_a5').innerText = calcRAVLT('RAVLT_A5', a5, age, gender);
 
-      document.getElementById('scalePD').value = '';
+      activeData.ravlt_assaig_1_pd_pre = isNaN(a1) ? "" : a1; activeData.ravlt_assaig_1_pe_pre = calcRAVLT('RAVLT_A1', a1, age, gender);
+      activeData.ravlt_assaig_2_pd_pre = isNaN(a2) ? "" : a2; activeData.ravlt_assaig_2_pe_pre = calcRAVLT('RAVLT_A2', a2, age, gender);
+      activeData.ravlt_assaig_3_pd_pre = isNaN(a3) ? "" : a3; activeData.ravlt_assaig_3_pe_pre = calcRAVLT('RAVLT_A3', a3, age, gender);
+      activeData.ravlt_assaig_4_pd_pre = isNaN(a4) ? "" : a4; activeData.ravlt_assaig_4_pe_pre = calcRAVLT('RAVLT_A4', a4, age, gender);
+      activeData.ravlt_assaig_5_pd_pre = isNaN(a5) ? "" : a5; activeData.ravlt_assaig_5_pe_pre = calcRAVLT('RAVLT_A5', a5, age, gender);
+
+      let totalA = (isNaN(a1)?0:a1) + (isNaN(a2)?0:a2) + (isNaN(a3)?0:a3) + (isNaN(a4)?0:a4) + (isNaN(a5)?0:a5);
+      let hasAnyA = !isNaN(a1)||!isNaN(a2)||!isNaN(a3)||!isNaN(a4)||!isNaN(a5);
+      document.getElementById('pd_ravlt_total').innerText = hasAnyA ? totalA : 0;
+      document.getElementById('pe_ravlt_total').innerText = hasAnyA ? calcRAVLT('RAVLT_TOTAL', totalA, age, gender) : "-";
+      activeData.ravlt_assaig_1_5_pd_pre = hasAnyA ? totalA : "";
+      activeData.ravlt_assaig_1_5_pe_pre = hasAnyA ? calcRAVLT('RAVLT_TOTAL', totalA, age, gender) : "";
+
+      const b1 = parseFloat(document.getElementById('pd_ravlt_b1').value);
+      const a6 = parseFloat(document.getElementById('pd_ravlt_a6').value);
+      const a7 = parseFloat(document.getElementById('pd_ravlt_a7').value);
+      const recA = parseFloat(document.getElementById('pd_ravlt_rec_a').value);
+      const recB = parseFloat(document.getElementById('pd_ravlt_rec_b').value);
+
+      document.getElementById('pe_ravlt_b1').innerText = calcRAVLT('RAVLT_B1', b1, age, gender);
+      document.getElementById('pe_ravlt_a6').innerText = calcRAVLT('RAVLT_A6', a6, age, gender);
+      document.getElementById('pe_ravlt_a7').innerText = calcRAVLT('RAVLT_A7', a7, age, gender);
+      document.getElementById('pe_ravlt_rec_a').innerText = calcRAVLT('RAVLT_REC_A', recA, age, gender);
+      document.getElementById('pe_ravlt_rec_b').innerText = calcRAVLT('RAVLT_REC_B', recB, age, gender);
+
+      activeData.ravlt_assaig_b_pd_pre = isNaN(b1) ? "" : b1; activeData.ravlt_assaig_b_pe_pre = calcRAVLT('RAVLT_B1', b1, age, gender);
+      activeData.ravlt_memoria_immediata_pd_pre = isNaN(a6) ? "" : a6; activeData.ravlt_memoria_immediata_pe_pre = calcRAVLT('RAVLT_A6', a6, age, gender);
+      activeData.ravlt_memoria_diferida_pd_pre = isNaN(a7) ? "" : a7; activeData.ravlt_memoria_diferida_pe_pre = calcRAVLT('RAVLT_A7', a7, age, gender);
+      activeData.ravlt_reconeixement_a_pd_pre = isNaN(recA) ? "" : recA; activeData.ravlt_reconeixement_a_pe_pre = calcRAVLT('RAVLT_REC_A', recA, age, gender);
+      activeData.ravlt_reconeixement_b_pd_pre = isNaN(recB) ? "" : recB; activeData.ravlt_reconeixement_b_pe_pre = calcRAVLT('RAVLT_REC_B', recB, age, gender);
+
+      // BVMT-R
+      const e1 = parseFloat(document.getElementById('bvmt_e1').value);
+      const e2 = parseFloat(document.getElementById('bvmt_e2').value);
+      const e3 = parseFloat(document.getElementById('bvmt_e3').value);
+      const e4 = parseFloat(document.getElementById('bvmt_e4').value);
+      const aciertos = parseFloat(document.getElementById('bvmt_aciertos').value);
+      const fp = parseFloat(document.getElementById('bvmt_fp').value);
+
+      let rt = (isNaN(e1)?0:e1) + (isNaN(e2)?0:e2) + (isNaN(e3)?0:e3);
+      let apr = Math.max(isNaN(e2)?0:e2, isNaN(e3)?0:e3) - (isNaN(e1)?0:e1);
+      let idDisc = (isNaN(aciertos)?0:aciertos) - (isNaN(fp)?0:fp);
+
+      document.getElementById('calc_bvmt_rt').innerText = rt;
+      document.getElementById('calc_bvmt_apr').innerText = apr;
+      document.getElementById('calc_bvmt_id').innerText = idDisc;
+
+      let pctRet = (e4 > 0 && Math.max(e2||0, e3||0) > 0) ? Math.round((e4 / Math.max(e2||0, e3||0)) * 100) + "%" : "-";
+      document.getElementById('bvmt_pct_retenido').innerText = pctRet;
+
+      let sesgoVal = calcBvmtSesgo(aciertos, fp);
+      document.getElementById('calc_bvmt_sesgo').innerText = sesgoVal;
+
+      const peBvmtE1 = calcBvmtPe(e1, 'e1', edu);
+      const peBvmtRt = calcBvmtPe(rt, 'rt', edu);
+      const peBvmtRd = calcBvmtPe(e4, 'rd', edu);
+      const peBvmtId = calcBvmtPe(idDisc, 'id', edu);
+
+      document.getElementById('pe_bvmt_e1').innerText = peBvmtE1;
+      document.getElementById('pe_bvmt_rt').innerText = peBvmtRt;
+      document.getElementById('pe_bvmt_rd').innerText = peBvmtRd;
+      document.getElementById('pe_bvmt_id').innerText = peBvmtId;
+
+      activeData.bvmt_r_assaig_1_pd_pre = isNaN(e1) ? "" : e1; activeData.bvmt_r_assaig_1_pe_pre = peBvmtE1;
+      activeData.bvmt_r_assaig_2_pd_pre = isNaN(e2) ? "" : e2;
+      activeData.bvmt_r_assaig_3_pd_pre = isNaN(e3) ? "" : e3;
+      activeData.bvmt_r_record_total_123_pd_pre = rt; activeData.bvmt_r_record_total_123_pe_pre = peBvmtRt;
+      activeData.bvmt_r_aprenentatge_pd_pre = apr;
+      activeData.bvmt_r_record_diferit_4_pd_pre = isNaN(e4) ? "" : e4; activeData.bvmt_r_record_diferit_4_pe_pre = peBvmtRd;
+      activeData.bvmt_r_reconeixement_encerts_pd_pre = isNaN(aciertos) ? "" : aciertos;
+      activeData.bvmt_r_reconeixement_falsos_positius_pd_pre = isNaN(fp) ? "" : fp;
+      activeData.bvmt_r_index_discriminacio_pd_pre = idDisc; activeData.bvmt_r_index_discriminacio_pe_pre = peBvmtId;
+      activeData.bvmt_r_sesgo_resposta_pd_pre = sesgoVal;
+
       renderExcelTable();
     }
 
     function renderExcelTable() {
       const tbody = document.getElementById('tableBody');
       if (!activeData.codi_participant) {
-        tbody.innerHTML = `<tr><td colspan="${FULL_COLUMNS.length}" class="text-center py-8 text-slate-400 italic">Introdueix un participant i una puntuació per començar.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="${FULL_COLUMNS.length}" class="text-center py-8 text-slate-400 italic">Omple les dades demogràfiques i puntuacions per generar la matriu.</td></tr>`;
         return;
       }
 
@@ -388,14 +600,6 @@
       }).join('');
 
       tbody.innerHTML = `<tr class="hover:bg-slate-50">${cells}</tr>`;
-    }
-
-    function clearCurrentParticipant() {
-      activeData = {};
-      document.getElementById('partCode').value = '';
-      document.getElementById('partAge').value = '';
-      document.getElementById('scalePD').value = '';
-      renderExcelTable();
     }
 
     function exportFullExcel() {
