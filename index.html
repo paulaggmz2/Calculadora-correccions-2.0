@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Calculadora TAP - NEURONORMA</title>
+  <title>Calculadora Neuropsicològica & Exportador de Base de Dades</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     body { background-color: #f8fafc; font-family: system-ui, -apple-system, sans-serif; }
@@ -11,338 +11,14 @@
 </head>
 <body class="p-4 md:p-8 min-h-screen flex items-center justify-center">
 
-  <div class="max-w-2xl w-full bg-white rounded-2xl shadow-xl border border-slate-200 p-6 md:p-8">
+  <div class="max-w-3xl w-full bg-white rounded-2xl shadow-xl border border-slate-200 p-6 md:p-8">
     
     <!-- Capçalera -->
     <div class="border-b border-slate-100 pb-5 mb-6">
       <div class="flex items-center justify-between">
         <div>
-          <h1 class="text-2xl font-bold text-slate-800">Calculadora Neuropsicològica</h1>
-          <p class="text-sm text-slate-500 mt-1">Avaluació de Barems NEURONORMA</p>
-        </div>
-        <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-1 rounded-full">TAP</span>
-      </div>
-    </div>
-
-    <form id="tapForm" onsubmit="return false;">
-      
-      <!-- Selecció de Prova (Només TAP) -->
-      <div class="mb-5">
-        <label for="testSelect" class="block text-sm font-semibold text-slate-700 mb-1">Prova Neuropsicològica</label>
-        <select id="testSelect" class="w-full px-4 py-2.5 border border-slate-300 rounded-lg bg-slate-50 text-slate-800 font-medium outline-none cursor-not-allowed" disabled>
-          <option value="TAP" selected>TAP (Test de Acentuación de Palabras)</option>
-        </select>
-      </div>
-
-      <!-- Dades Demogràfiques i PD -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
-        
-        <div>
-          <label for="age" class="block text-sm font-semibold text-slate-700 mb-1">Edat (Anys)</label>
-          <input type="number" id="age" min="18" max="90" placeholder="Ex: 45" required
-                 class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition">
-          <p class="text-xs text-slate-400 mt-1">Rangs: 18 a 86 anys</p>
-        </div>
-
-        <div>
-          <label for="edu" class="block text-sm font-semibold text-slate-700 mb-1">Escolaritat (Anys)</label>
-          <input type="number" id="edu" min="0" max="20" placeholder="Ex: 12" required
-                 class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition">
-          <p class="text-xs text-slate-400 mt-1">Rangs: 0 a 20 anys</p>
-        </div>
-
-        <div>
-          <label for="gender" class="block text-sm font-semibold text-slate-700 mb-1">Gènere</label>
-          <select id="gender" class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition">
-            <option value="Home">Home</option>
-            <option value="Dona">Dona</option>
-            <option value="Altre">Altre</option>
-          </select>
-        </div>
-
-        <div>
-          <label for="pd" class="block text-sm font-semibold text-slate-700 mb-1">Puntuació Directa (PD)</label>
-          <input type="number" id="pd" min="0" max="30" placeholder="0 a 30" required
-                 class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition">
-          <p class="text-xs text-slate-400 mt-1">Màxim: 30 encerts</p>
-        </div>
-
-      </div>
-
-      <!-- Botons d'Acció -->
-      <div class="flex gap-3 mb-6">
-        <button type="button" onclick="calculateTAP()" 
-                class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg shadow-md hover:shadow-lg transition">
-          Calcular Puntuació Corregida
-        </button>
-        <button type="button" onclick="resetForm()" 
-                class="bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold py-3 px-4 rounded-lg transition">
-          Netejar
-        </button>
-      </div>
-
-    </form>
-
-    <!-- Targeta de Resultats -->
-    <div id="resultsCard" class="hidden bg-slate-50 rounded-xl p-5 border border-slate-200">
-      <h2 class="text-lg font-bold text-slate-800 mb-4 flex items-center justify-between">
-        Resultat de l'Avaluació
-        <span id="badgeClass" class="text-xs font-bold px-2.5 py-1 rounded"></span>
-      </h2>
-
-      <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-4">
-        
-        <div class="bg-white p-3 rounded-lg border border-slate-200 text-center">
-          <span class="block text-xs font-medium text-slate-400 uppercase">Puntuació Directa (PD)</span>
-          <span id="resPD" class="text-2xl font-extrabold text-slate-700">-</span>
-        </div>
-
-        <div class="bg-white p-3 rounded-lg border border-slate-200 text-center">
-          <span class="block text-xs font-medium text-slate-400 uppercase">Pe (Ajustat Edat)</span>
-          <span id="resPeAge" class="text-2xl font-extrabold text-slate-700">-</span>
-        </div>
-
-        <div class="bg-white p-3 rounded-lg border border-blue-200 text-center col-span-2 md:col-span-1">
-          <span class="block text-xs font-semibold text-blue-600 uppercase">Puntuació Escalar (Pe Final)</span>
-          <span id="resPeFinal" class="text-2xl font-extrabold text-blue-600">-</span>
-        </div>
-
-      </div>
-
-      <div class="bg-white p-4 rounded-lg border border-slate-200 mb-4">
-        <div class="flex justify-between items-center mb-1">
-          <h3 class="text-xs font-bold text-slate-400 uppercase">Classificació / Interpretació Clínica</h3>
-          <span id="resPercentile" class="text-xs font-semibold text-slate-500"></span>
-        </div>
-        <p id="resInterp" class="text-sm font-semibold text-slate-800"></p>
-      </div>
-
-      <!-- Botó per Descarregar Excel / CSV -->
-      <button type="button" onclick="exportToExcel()" 
-              class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2.5 px-4 rounded-lg shadow transition flex items-center justify-center gap-2">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-        </svg>
-        Descarregar Resultat en Excel (.csv)
-      </button>
-    </div>
-
-  </div>
-
-  <script>
-    // Variables globals per a l'exportació
-    let currentData = null;
-
-    // 1. DADES BAREMS EDAT
-    const AGE_TABLE = [
-      { pe: 2,  ranges: [[0, 13], [0, 11], [0, 15], [0, 9], [0, 8], [0, 8], [0, 10], [0, 10], [0, 4]] },
-      { pe: 3,  ranges: [[14, 14], [12, 13], [16, 16], [10, 13], null, null, null, null, [5, 14]] },
-      { pe: 4,  ranges: [[15, 18], [14, 17], [17, 18], [14, 17], [9, 9], null, null, null, [15, 18]] },
-      { pe: 5,  ranges: [[19, 19], [18, 20], [19, 20], [18, 19], [10, 11], [9, 11], [2, 4], [2, 3], [19, 19]] },
-      { pe: 6,  ranges: [[20, 20], [21, 22], [21, 22], [20, 21], [12, 13], [12, 13], [5, 13], [4, 10], [20, 20]] },
-      { pe: 7,  ranges: [[21, 21], [23, 23], [23, 23], [22, 23], [14, 16], [14, 16], [14, 15], [11, 11], [21, 21]] },
-      { pe: 8,  ranges: [[22, 23], [24, 24], [24, 25], [24, 24], [17, 18], [17, 18], [16, 17], [12, 14], [22, 23]] },
-      { pe: 9,  ranges: [[24, 24], [25, 25], [26, 26], [25, 25], [19, 21], [19, 21], [18, 19], [15, 17], [24, 24]] },
-      { pe: 10, ranges: [[25, 25], [26, 26], [27, 27], [26, 26], [22, 24], [22, 24], [20, 21], [18, 18], [25, 25]] },
-      { pe: 11, ranges: [[26, 26], [27, 27], [28, 28], [27, 28], [25, 26], [25, 26], [22, 25], [19, 21], [26, 26]] },
-      { pe: 12, ranges: [[27, 27], [28, 28], null, [29, 29], [27, 27], [27, 27], [26, 26], [22, 23], [27, 27]] },
-      { pe: 13, ranges: [[28, 28], [29, 29], [29, 29], null, [28, 28], [28, 28], [27, 28], [24, 25], [28, 28]] },
-      { pe: 14, ranges: [[29, 29], null, null, null, [29, 29], [29, 29], [29, 29], [26, 29], [29, 29]] },
-      { pe: 15, ranges: [null, null, null, null, null, null, null, null, null] },
-      { pe: 16, ranges: [null, null, null, null, null, null, null, null, null] },
-      { pe: 17, ranges: [null, null, null, null, null, null, null, null, null] },
-      { pe: 18, ranges: [[30, 30], [30, 30], [30, 30], [30, 30], [30, 30], [30, 30], [30, 30], [30, 30], [30, 30]] }
-    ];
-
-    // 2. DADES BAREMS ESCOLARITAT
-    const EDU_TABLE = [
-      [9,8,7,7,6,6,5,5,4,4,3,3,2,1,1,0,0,-1,-1,-2,-2],
-      [10,9,8,8,7,7,6,6,5,5,4,4,3,2,2,1,1,0,0,-1,-1],
-      [11,10,9,9,8,8,7,7,6,6,5,5,4,3,3,2,2,1,1,0,0],
-      [12,11,10,10,9,9,8,8,7,7,6,6,5,4,4,3,3,2,2,1,1],
-      [13,12,11,11,10,10,9,9,8,8,7,7,6,5,5,4,4,3,3,2,2],
-      [14,13,12,12,11,11,10,10,9,9,8,8,7,6,6,5,5,4,4,3,3],
-      [15,14,13,13,12,12,11,11,10,10,9,9,8,7,7,6,6,5,5,4,4],
-      [16,15,14,14,13,13,12,12,11,11,10,10,9,8,8,7,7,6,6,5,5],
-      [17,16,15,15,14,14,13,13,12,12,11,11,10,9,9,8,8,7,7,6,6],
-      [18,17,16,16,15,15,14,14,13,13,12,12,11,10,10,9,9,8,8,7,7],
-      [19,18,17,17,16,16,15,15,14,14,13,13,12,11,11,10,10,9,9,8,8],
-      [20,19,18,18,17,17,16,16,15,15,14,14,13,12,12,11,11,10,10,9,9],
-      [21,20,19,19,18,18,17,17,16,16,15,15,14,13,13,12,12,11,11,10,10],
-      [22,21,20,20,19,19,18,18,17,17,16,16,15,14,14,13,13,12,12,11,11],
-      [23,22,21,21,20,20,19,19,18,18,17,17,16,15,15,14,14,13,13,12,12],
-      [24,23,22,22,21,21,20,20,19,19,18,18,17,16,16,15,15,14,14,13,13],
-      [25,24,23,23,22,22,21,21,20,20,19,19,18,17,17,16,16,15,15,14,14]
-    ];
-
-    function getAgeGroupIndex(age) {
-      if (age >= 18 && age <= 25) return 0;
-      if (age >= 26 && age <= 35) return 1;
-      if (age >= 36 && age <= 45) return 2;
-      if (age >= 46 && age <= 55) return 3;
-      if (age >= 56 && age <= 65) return 4;
-      if (age >= 66 && age <= 70) return 5;
-      if (age >= 71 && age <= 75) return 6;
-      if (age >= 76 && age <= 80) return 7;
-      if (age >= 81 && age <= 86) return 8;
-      if (age > 86) return 8;
-      return -1;
-    }
-
-    function calculateTAP() {
-      const age = parseInt(document.getElementById('age').value);
-      const edu = parseInt(document.getElementById('edu').value);
-      const gender = document.getElementById('gender').value;
-      const pd = parseFloat(document.getElementById('pd').value);
-
-      if (isNaN(age) || isNaN(edu) || isNaN(pd)) {
-        alert("Si us plau, omple tots els camps amb valors vàlids.");
-        return;
-      }
-
-      const ageCol = getAgeGroupIndex(age);
-      if (ageCol === -1) {
-        alert("L'edat ha de ser de 18 anys o més.");
-        return;
-      }
-
-      // 1. Trobar Pe segons Edat i PD
-      let peAge = null;
-      for (const row of AGE_TABLE) {
-        const range = row.ranges[ageCol];
-        if (range && pd >= range[0] && pd <= range[1]) {
-          peAge = row.pe;
-          break;
-        }
-      }
-
-      if (peAge === null) {
-        if (pd < 0) peAge = 2;
-        else if (pd >= 30) peAge = 18;
-        else peAge = 2;
-      }
-
-      // 2. Trobar Pe Final ajustat per Escolaritat
-      const eduClamped = Math.min(Math.max(edu, 0), 20);
-      const peRowIndex = Math.min(Math.max(peAge - 2, 0), 16);
-      const peFinal = EDU_TABLE[peRowIndex][eduClamped];
-
-      // 3. Classificació i Percentils
-      let interp = "";
-      let percentile = "";
-      let badgeColor = "";
-
-      if (peFinal >= 13) {
-        interp = "Rendiment Superior / Alt";
-        percentile = "> Percentil 85";
-        badgeColor = "bg-emerald-100 text-emerald-800";
-      } else if (peFinal >= 8) {
-        interp = "Rendiment Normal / Promig";
-        percentile = "Percentil 25 - 75";
-        badgeColor = "bg-blue-100 text-blue-800";
-      } else if (peFinal >= 6) {
-        interp = "Rendiment Normal-Baix / Borderline";
-        percentile = "Percentil 10 - 20";
-        badgeColor = "bg-yellow-100 text-yellow-800";
-      } else if (peFinal >= 4) {
-        interp = "Alteració Lleu / Dèficit Moderat";
-        percentile = "Percentil 2 - 5";
-        badgeColor = "bg-orange-100 text-orange-800";
-      } else {
-        interp = "Anormal / Dèficit Greu";
-        percentile = "< Percentil 2";
-        badgeColor = "bg-red-100 text-red-800";
-      }
-
-      // Guardar dades actuals per a exportació
-      currentData = {
-        test: "TAP (Test de Acentuación de Palabras)",
-        pd: pd,
-        peAge: peAge,
-        peFinal: peFinal,
-        age: age,
-        edu: edu,
-        gender: gender,
-        percentile: percentile,
-        interp: interp
-      };
-
-      // Actualitzar interfície
-      document.getElementById('resPD').innerText = pd;
-      document.getElementById('resPeAge').innerText = peAge;
-      document.getElementById('resPeFinal').innerText = peFinal;
-      document.getElementById('resPercentile').innerText = percentile;
-      document.getElementById('resInterp').innerText = interp;
-
-      const badge = document.getElementById('badgeClass');
-      badge.innerText = interp.split('/')[0];
-      badge.className = `text-xs font-bold px-2.5 py-1 rounded ${badgeColor}`;
-
-      document.getElementById('resultsCard').classList.remove('hidden');
-    }
-
-    function resetForm() {
-      document.getElementById('tapForm').reset();
-      document.getElementById('resultsCard').classList.add('hidden');
-      currentData = null;
-    }
-
-    // Funció per generar i descarregar fitxer Excel/CSV en columnes
-    function exportToExcel() {
-      if (!currentData) return;
-
-      // Capçaleres de les columnes i fila de valors
-      const headers = ["Prova", "Puntuació Directa (PD)", "Puntuació Escalar (Pe Final)", "Pe Ajustat Edat", "Edat", "Escolaritat", "Gènere", "Percentil", "Classificació"];
-      const values = [
-        `"${currentData.test}"`,
-        currentData.pd,
-        currentData.peFinal,
-        currentData.peAge,
-        currentData.age,
-        currentData.edu,
-        `"${currentData.gender}"`,
-        `"${currentData.percentile}"`,
-        `"${currentData.interp}"`
-      ];
-
-      // Formatar contingut en CSV separat per comes amb codificació UTF-8
-      const csvContent = "\uFEFF" + headers.join(";") + "\n" + values.join(";");
-
-      // Crear l'enllaç de descàrrega
-      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.setAttribute("href", url);
-      link.setAttribute("download", `Resultat_TAP_PD${currentData.pd}_Pe${currentData.peFinal}.csv`);
-      document.body.appendChild(link);
-      
-      link.click();
-      document.body.removeChild(link);
-    }
-  </script>
-</body>
-</html>
-<!DOCTYPE html>
-<html lang="ca">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Calculadora Neuropsicològica - TAP i WAIS-III</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    body { background-color: #f8fafc; font-family: system-ui, -apple-system, sans-serif; }
-  </style>
-</head>
-<body class="p-4 md:p-8 min-h-screen flex items-center justify-center">
-
-  <div class="max-w-2xl w-full bg-white rounded-2xl shadow-xl border border-slate-200 p-6 md:p-8">
-    
-    <!-- Capçalera -->
-    <div class="border-b border-slate-100 pb-5 mb-6">
-      <div class="flex items-center justify-between">
-        <div>
-          <h1 class="text-2xl font-bold text-slate-800">Calculadora Neuropsicològica</h1>
-          <p class="text-sm text-slate-500 mt-1">Correcció de barems: TAP i WAIS-III</p>
+          <h1 class="text-2xl font-bold text-slate-800">Plataforma Avaluació Neuropsicològica</h1>
+          <p class="text-sm text-slate-500 mt-1">Càlcul de barems i exportació estandarditzada de dades</p>
         </div>
         <span id="testBadge" class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-1 rounded-full">TAP</span>
       </div>
@@ -350,23 +26,31 @@
 
     <form id="calcForm" onsubmit="return false;">
       
-      <!-- Selecció de Prova -->
-      <div class="mb-5">
-        <label for="testSelect" class="block text-sm font-semibold text-slate-700 mb-1">Selecciona la Prova Neuropsicològica</label>
-        <select id="testSelect" onchange="onTestChange()" class="w-full px-4 py-2.5 border border-slate-300 rounded-lg bg-white text-slate-800 font-medium outline-none focus:ring-2 focus:ring-blue-500">
-          <option value="TAP">TAP (Test de Acentuación de Palabras - NEURONORMA)</option>
-          <option value="WAIS_COD">Clave de Números (WAIS-III) - 1. Codificación</option>
-          <option value="WAIS_EMP">Clave de Números (WAIS-III) - 2. Emparejamiento (E)</option>
-          <option value="WAIS_COP">Clave de Números (WAIS-III) - 3. Copia</option>
-          <option value="WAIS_ML">Clave de Números (WAIS-III) - 4. Memoria Libre (M.L.)</option>
-        </select>
+      <!-- Codi Participant i Selecció de Prova -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-5">
+        <div>
+          <label for="participantCode" class="block text-sm font-semibold text-slate-700 mb-1">Codi Participant *</label>
+          <input type="text" id="participantCode" placeholder="Ex: METS01" required
+                 class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none font-bold text-blue-900 uppercase">
+        </div>
+
+        <div class="md:col-span-2">
+          <label for="testSelect" class="block text-sm font-semibold text-slate-700 mb-1">Selecciona la Prova a Calcular *</label>
+          <select id="testSelect" onchange="onTestChange()" class="w-full px-4 py-2.5 border border-slate-300 rounded-lg bg-white text-slate-800 font-medium outline-none focus:ring-2 focus:ring-blue-500">
+            <option value="TAP">TAP (Test de Acentuación de Palabras - NEURONORMA)</option>
+            <option value="WAIS_COD">Clave de Números (WAIS-III) - 1. Codificación</option>
+            <option value="WAIS_EMP">Clave de Números (WAIS-III) - 2. Emparejamiento (E)</option>
+            <option value="WAIS_COP">Clave de Números (WAIS-III) - 3. Copia</option>
+            <option value="WAIS_ML">Clave de Números (WAIS-III) - 4. Memoria Libre (M.L.)</option>
+          </select>
+        </div>
       </div>
 
       <!-- Dades Demogràfiques i PD -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
         
         <div>
-          <label for="age" class="block text-sm font-semibold text-slate-700 mb-1">Edat (Anys)</label>
+          <label for="age" class="block text-sm font-semibold text-slate-700 mb-1">Edat (Anys) *</label>
           <input type="number" id="age" min="18" max="100" placeholder="Ex: 45" required
                  class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition">
           <p id="ageHint" class="text-xs text-slate-400 mt-1">Rangs: 18 a 86 anys</p>
@@ -389,7 +73,7 @@
         </div>
 
         <div>
-          <label for="pd" class="block text-sm font-semibold text-slate-700 mb-1">Puntuació Directa (PD)</label>
+          <label for="pd" class="block text-sm font-semibold text-slate-700 mb-1">Puntuació Directa (PD) *</label>
           <input type="number" id="pd" min="0" max="133" placeholder="Introdueix PD" required
                  class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition">
           <p id="pdHint" class="text-xs text-slate-400 mt-1">Màxim: 30 encerts</p>
@@ -414,7 +98,7 @@
     <!-- Targeta de Resultats -->
     <div id="resultsCard" class="hidden bg-slate-50 rounded-xl p-5 border border-slate-200">
       <h2 class="text-lg font-bold text-slate-800 mb-4 flex items-center justify-between">
-        Resultat de l'Avaluació
+        Resultats Avaluació: <span id="resParticipant" class="text-blue-700 font-extrabold ml-1"></span>
         <span id="badgeClass" class="text-xs font-bold px-2.5 py-1 rounded"></span>
       </h2>
 
@@ -431,13 +115,13 @@
         </div>
 
         <div class="bg-white p-3 rounded-lg border border-blue-200 text-center col-span-2 md:col-span-1">
-          <span id="resScoreLabel" class="block text-xs font-semibold text-blue-600 uppercase">Puntuació Escalar (Pe Final)</span>
+          <span id="resScoreLabel" class="block text-xs font-semibold text-blue-600 uppercase">Puntuació Escalar / Percentil</span>
           <span id="resScoreValue" class="text-2xl font-extrabold text-blue-600">-</span>
         </div>
 
       </div>
 
-      <div class="bg-white p-4 rounded-lg border border-slate-200 mb-4">
+      <div class="bg-white p-4 rounded-lg border border-slate-200 mb-5">
         <div class="flex justify-between items-center mb-1">
           <h3 class="text-xs font-bold text-slate-400 uppercase">Classificació / Interpretació Clínica</h3>
           <span id="resPercentile" class="text-xs font-semibold text-slate-500"></span>
@@ -445,22 +129,66 @@
         <p id="resInterp" class="text-sm font-semibold text-slate-800"></p>
       </div>
 
-      <!-- Botó per Descarregar Excel / CSV -->
-      <button type="button" onclick="exportToExcel()" 
-              class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2.5 px-4 rounded-lg shadow transition flex items-center justify-center gap-2">
+      <!-- Botó per Descarregar Excel COMPLET -->
+      <button type="button" onclick="exportFullExcel()" 
+              class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 px-4 rounded-lg shadow-md transition flex items-center justify-center gap-2">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
         </svg>
-        Descarregar Resultat en Excel (.csv)
+        Descarregar Excel Complet amb Totes les Escales (.csv)
       </button>
     </div>
 
   </div>
 
   <script>
-    let currentData = null;
+    let currentData = {};
 
-    // --- BAREMS TAP ---
+    // ESTRUCTURA COMPLETA DE COLUMNES PER A L'EXCEL REQUERIT
+    const FULL_COLUMNS = [
+      "codi_participant", "tap_pd_pre", "tap_pe_pre", "ravlt_assaig_1_pd_pre", "ravlt_assaig_1_pe_pre", 
+      "ravlt_assaig_2_pd_pre", "ravlt_assaig_2_pe_pre", "ravlt_assaig_3_pd_pre", "ravlt_assaig_3_pe_pre", 
+      "ravlt_assaig_4_pd_pre", "ravlt_assaig_4_pe_pre", "ravlt_assaig_5_pd_pre", "ravlt_assaig_5_pe_pre", 
+      "ravlt_assaig_1_5_pd_pre", "ravlt_assaig_1_5_pe_pre", "ravlt_assaig_b_pd_pre", "ravlt_assaig_b_pe_pre", 
+      "ravlt_memoria_immediata_pd_pre", "ravlt_memoria_immediata_pe_pre", "ravlt_memoria_diferida_pd_pre", 
+      "ravlt_memoria_diferida_pe_pre", "ravlt_reconeixement_a_pd_pre", "ravlt_reconeixement_a_pe_pre", 
+      "ravlt_reconeixement_b_pd_pre", "ravlt_reconeixement_b_pe_pre", "cn_codificacio_pd_pre", 
+      "cn_codificacio_pe_pre", "cn_aparellament_pd_pre", "cn_aparellament_pc_pre", "cn_memoria_lliure_pd_pre", 
+      "cn_memoria_lliure_pc_pre", "cn_copia_pd_pre", "cn_copia_pc_pre", "omissions_pd_pre", "omissions_pt_pre", 
+      "commissions_pd_pre", "commissions_pt_pre", "hit_rt_pd_pre", "hit_rt_pt_pre", "hit_rt_std_error_pd_pre", 
+      "hit_rt_std_error_pt_pre", "variability_pd_pre", "variability_pt_pre", "detectability_pd_pre", 
+      "detectability_pt_pre", "response_style_pd_pre", "response_style_pt_pre", "perseverations_pd_pre", 
+      "perseverations_pt_pre", "hit_rt_block_change_pd_pre", "hit_rt_block_change_pt_pre", 
+      "hit_se_block_change_pd_pre", "hit_se_block_change_pt_pre", "hit_rt_isi_change_pd_pre", 
+      "hit_rt_isi_change_pt_pre", "hit_se_isi_change_pd_pre", "hit_se_isi_change_pt_pre", 
+      "bvmt_r_assaig_1_pd_pre", "bvmt_r_assaig_1_pe_pre", "bvmt_r_assaig_2_pd_pre", "bvmt_r_assaig_3_pd_pre", 
+      "bvmt_r_record_total_123_pd_pre", "bvmt_r_record_total_123_pe_pre", "bvmt_r_aprenentatge_pd_pre", 
+      "bvmt_r_record_diferit_4_pd_pre", "bvmt_r_record_diferit_4_pe_pre", "bvmt_r_reconeixement_encerts_pd_pre", 
+      "bvmt_r_reconeixement_falsos_positius_pd_pre", "bvmt_r_index_discriminacio_pd_pre", 
+      "bvmt_r_index_discriminacio_pe_pre", "bvmt_r_sesgo_resposta_pd_pre", "wms_ml_i_immediata_pd_pre", 
+      "wms_ml_i_immediata_pe_pre", "wms_ml_ii_diferida_pd_pre", "wms_ml_ii_diferida_pe_pre", 
+      "wms_reconeixement_pd_pre", "wms_reconeixement_percentatge_acumulat_pre", "digits_directes_span_pd_pre", 
+      "digits_directes_span_pe_pre", "digits_inversos_span_pd_pre", "digits_inversos_span_pe_pre", 
+      "tmt_a_pd_pre", "tmt_a_pe_pre", "tmt_b_pd_pre", "tmt_b_pe_pre", "wcst_total_correct_pd_pre", 
+      "wcst_total_errors_pd_pre", "wcst_total_errors_pt_pre", "wcst_perseverative_responses_pd_pre", 
+      "wcst_perseverative_responses_pt_pre", "wcst_perseverative_errors_pd_pre", 
+      "wcst_perseverative_errors_pt_pre", "wcst_nonperseverative_errors_pd_pre", 
+      "wcst_nonperseverative_errors_pt_pre", "wcst_conceptual_level_responses_pd_pre", 
+      "wcst_conceptual_level_responses_pt_pre", "wcst_categories_completed_pd_pre", 
+      "wcst_trials_to_complete_1st_category_pd_pre", "wcst_failure_to_maintain_set_pd_pre", 
+      "wcst_learning_to_learn_pd_pre", "wcst_aprendre_a_aprendre_pc_pre", "stroop_p_pd_pre", 
+      "stroop_p_pe_pre", "stroop_c_pd_pre", "stroop_c_pe_pre", "stroop_pc_pd_pre", "stroop_pc_pe_pre", 
+      "pmr_p_pd_pre", "pmr_p_pe_pre", "pmr_m_pd_pre", "pmr_m_pe_pre", "pmr_r_pd_pre", "pmr_r_pe_pre", 
+      "animals_pd_pre", "animals_pe_pre", "moca_visuoespacial_executiva_pre", "moca_identificacio_pre", 
+      "moca_atencio_serie_numeros_pre", "moca_atencio_serie_lletres_pre", "moca_atencio_resta_numeros_pre", 
+      "moca_atencio_total_pre", "moca_llenguatge_repeticio_pre", "moca_llenguatge_fluencia_pre", 
+      "moca_abstraccio_pre", "moca_record_diferit_pre", "moca_orientacio_pre", "moca_total_pd_pre", 
+      "moca_total_pe_pre", "moca_mis_pd_pre", "moca_mis_pc_pre", "fcr_exactitud_memoria_immediata_pd_pre", 
+      "fcr_construccio_memoria_immediata_pd_pre", "fcr_exactitud_memoria_diferida_pd_pre", 
+      "fcr_temps_memoria_immediata_pd_pre", "fcr_temps_memoria_diferida_pd_pre"
+    ];
+
+    // BAREMS TAP
     const TAP_AGE_TABLE = [
       { pe: 2,  ranges: [[0, 13], [0, 11], [0, 15], [0, 9], [0, 8], [0, 8], [0, 10], [0, 10], [0, 4]] },
       { pe: 3,  ranges: [[14, 14], [12, 13], [16, 16], [10, 13], null, null, null, null, [5, 14]] },
@@ -501,8 +229,7 @@
       [25,24,23,23,22,22,21,21,20,20,19,19,18,17,17,16,16,15,15,14,14]
     ];
 
-    // --- BAREMS WAIS III (CLAVE DE NÚMEROS) ---
-    // 1. Codificación (Pe: 2 a 19)
+    // BAREMS WAIS III
     const WAIS_COD_TABLE = [
       { pe: 2,  ranges: [[0,35], [0,30], [0,23], [0,10]] },
       { pe: 3,  ranges: [[36,38], [31,38], [24,30], [11,16]] },
@@ -524,7 +251,6 @@
       { pe: 19, ranges: [[120,133], [133,133], [133,133], [117,133]] }
     ];
 
-    // 2. Emparejamiento (E) (Percentils)
     const WAIS_EMP_TABLE = [
       { pc: "10",   ranges: [[4,4], [2,3], [1,2], [0,1]] },
       { pc: "25",   ranges: [[6,8], [5,5], [3,4], [2,2]] },
@@ -536,7 +262,6 @@
       { pc: "99",   ranges: [[18,18], [18,18], [13,13], [8,9]] }
     ];
 
-    // 3. Copia (Percentils)
     const WAIS_COP_TABLE = [
       { pc: "10",   ranges: [[7,9], [2,3], [1,1], [0,0]] },
       { pc: "25",   ranges: [[10,14], [4,7], [2,3], [1,1]] },
@@ -548,7 +273,6 @@
       { pc: "99",   ranges: [[44,133], [27,133], [18,133], [13,133]] }
     ];
 
-    // 4. Memoria Libre (M.L.) (Percentils)
     const WAIS_ML_TABLE = [
       { pc: "10",   ranges: [[2,2], [1,1], [0,0], [0,0]] },
       { pc: "25",   ranges: [[3,3], [2,2], [1,1], [0,0]] },
@@ -560,7 +284,6 @@
       { pc: "99",   ranges: [[9,9], [9,9], [6,9], [5,9]] }
     ];
 
-    // Canvi de Prova seleccionada
     function onTestChange() {
       const test = document.getElementById('testSelect').value;
       const testBadge = document.getElementById('testBadge');
@@ -611,9 +334,7 @@
       return -1;
     }
 
-    // Calcular Percentils per a taules estil WAIS Emparejamiento/Copia/ML
     function calculateWAISPercentile(table, pd, ageCol) {
-      // Cas inferior a P10
       const p10Range = table[0].ranges[ageCol];
       if (pd < p10Range[0]) return "< 10";
 
@@ -631,24 +352,23 @@
         }
         prevPc = row.pc;
       }
-      
       return "> 99";
     }
 
     function calculateScore() {
+      const participant = document.getElementById('participantCode').value.trim();
       const test = document.getElementById('testSelect').value;
       const age = parseInt(document.getElementById('age').value);
       const pd = parseFloat(document.getElementById('pd').value);
 
-      if (isNaN(age) || isNaN(pd)) {
-        alert("Si us plau, omple tots els camps obligatoris.");
-        return;
-      }
+      if (!participant) { alert("Si us plau, escriu el Codi del Participant (ex: METS01)."); return; }
+      if (isNaN(age) || isNaN(pd)) { alert("Si us plau, omple tots els camps obligatoris."); return; }
 
       const peAgeBox = document.getElementById('peAgeBox');
       const resScoreLabel = document.getElementById('resScoreLabel');
 
-      // --- EXECUCIÓ TAP ---
+      currentData = { participant };
+
       if (test === 'TAP') {
         peAgeBox.classList.remove('hidden');
         resScoreLabel.innerText = "Puntuació Escalar (Pe Final)";
@@ -677,7 +397,8 @@
         else if (peFinal >= 4) { interp = "Alteració Lleu / Dèficit Moderat"; percentile = "Percentil 2 - 5"; badgeColor = "bg-orange-100 text-orange-800"; }
         else { interp = "Anormal / Dèficit Greu"; percentile = "< Percentil 2"; badgeColor = "bg-red-100 text-red-800"; }
 
-        currentData = { test: "TAP", pd, peScore: peFinal, peAge, age, edu, gender, percentile, interp };
+        currentData.tap_pd_pre = pd;
+        currentData.tap_pe_pre = peFinal;
 
         document.getElementById('resPD').innerText = pd;
         document.getElementById('resPeAge').innerText = peAge;
@@ -689,8 +410,6 @@
         badge.innerText = interp.split('/')[0];
         badge.className = `text-xs font-bold px-2.5 py-1 rounded ${badgeColor}`;
       }
-
-      // --- EXECUCIÓ WAIS-III CODIFICACIÓ ---
       else if (test === 'WAIS_COD') {
         peAgeBox.classList.add('hidden');
         resScoreLabel.innerText = "Puntuació Escalar (Pe)";
@@ -711,7 +430,8 @@
         else if (pe >= 6) { interp = "Rendiment Normal-Baix"; percentile = "Percentil 9 - 16"; badgeColor = "bg-yellow-100 text-yellow-800"; }
         else { interp = "Rendiment Baix / Dèficit"; percentile = "< Percentil 9"; badgeColor = "bg-red-100 text-red-800"; }
 
-        currentData = { test: "WAIS-III: Codificación", pd, peScore: pe, peAge: "-", age, edu: "-", gender: "-", percentile, interp };
+        currentData.cn_codificacio_pd_pre = pd;
+        currentData.cn_codificacio_pe_pre = pe;
 
         document.getElementById('resPD').innerText = pd;
         document.getElementById('resScoreValue').innerText = pe;
@@ -722,8 +442,6 @@
         badge.innerText = interp.split('/')[0];
         badge.className = `text-xs font-bold px-2.5 py-1 rounded ${badgeColor}`;
       }
-
-      // --- EXECUCIÓ WAIS-III (EMPAREJAMIENTO, COPIA, MEMORIA LIBRE) ---
       else {
         peAgeBox.classList.add('hidden');
         resScoreLabel.innerText = "Percentil (Pc)";
@@ -732,9 +450,9 @@
         if (ageCol === -1) { alert("L'edat ha de ser de 25 anys o més per al WAIS-III."); return; }
 
         let table = WAIS_EMP_TABLE;
-        let testName = "WAIS-III: Emparejamiento";
-        if (test === 'WAIS_COP') { table = WAIS_COP_TABLE; testName = "WAIS-III: Copia"; }
-        if (test === 'WAIS_ML') { table = WAIS_ML_TABLE; testName = "WAIS-III: Memoria Libre"; }
+        let keyPd = "cn_aparellament_pd_pre", keyPc = "cn_aparellament_pc_pre";
+        if (test === 'WAIS_COP') { table = WAIS_COP_TABLE; keyPd = "cn_copia_pd_pre"; keyPc = "cn_copia_pc_pre"; }
+        if (test === 'WAIS_ML') { table = WAIS_ML_TABLE; keyPd = "cn_memoria_lliure_pd_pre"; keyPc = "cn_memoria_lliure_pc_pre"; }
 
         const pcResult = calculateWAISPercentile(table, pd, ageCol);
 
@@ -745,7 +463,8 @@
           interp = "Rendiment Baix / Dèficit"; badgeColor = "bg-red-100 text-red-800";
         }
 
-        currentData = { test: testName, pd, peScore: pcResult, peAge: "-", age, edu: "-", gender: "-", percentile: `Pc ${pcResult}`, interp };
+        currentData[keyPd] = pd;
+        currentData[keyPc] = pcResult;
 
         document.getElementById('resPD').innerText = pd;
         document.getElementById('resScoreValue').innerText = pcResult;
@@ -757,6 +476,7 @@
         badge.className = `text-xs font-bold px-2.5 py-1 rounded ${badgeColor}`;
       }
 
+      document.getElementById('resParticipant').innerText = participant;
       document.getElementById('resultsCard').classList.remove('hidden');
     }
 
@@ -764,30 +484,25 @@
       document.getElementById('calcForm').reset();
       document.getElementById('resultsCard').classList.add('hidden');
       onTestChange();
-      currentData = null;
+      currentData = {};
     }
 
-    function exportToExcel() {
-      if (!currentData) return;
+    // EXPORTADOR COMPLET EN UNA SOLA FILA
+    function exportFullExcel() {
+      if (!currentData || !currentData.participant) return;
 
-      const headers = ["Prova", "Puntuació Directa (PD)", "Puntuació Corregida / Percentil", "Edat", "Escolaritat", "Gènere", "Percentil Estimat", "Classificació"];
-      const values = [
-        `"${currentData.test}"`,
-        currentData.pd,
-        `"${currentData.peScore}"`,
-        currentData.age,
-        `"${currentData.edu}"`,
-        `"${currentData.gender}"`,
-        `"${currentData.percentile}"`,
-        `"${currentData.interp}"`
-      ];
+      const rowValues = FULL_COLUMNS.map(col => {
+        if (col === "codi_participant") return `"${currentData.participant}"`;
+        if (currentData[col] !== undefined) return `"${currentData[col]}"`;
+        return '""'; // Columna buida per a la resta de variables no calculades en aquesta sessió
+      });
 
-      const csvContent = "\uFEFF" + headers.join(";") + "\n" + values.join(";");
+      const csvContent = "\uFEFF" + FULL_COLUMNS.join(";") + "\n" + rowValues.join(";");
       const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.setAttribute("href", url);
-      link.setAttribute("download", `Resultat_${currentData.test.replace(/[^a-z0-9]/gi, '_')}_PD${currentData.pd}.csv`);
+      link.setAttribute("download", `BaseDades_${currentData.participant}.csv`);
       document.body.appendChild(link);
       
       link.click();
